@@ -18,6 +18,7 @@ class MainActivity :
     HomeFragment.Parent,
     SearchFragment.Parent {
 
+    private var currentNavigationFragment = -1
     private val navigationListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
 
         val fragment: Fragment = when (item.itemId) {
@@ -28,20 +29,29 @@ class MainActivity :
             else -> throw RuntimeException("unhandled fragment type ${item.itemId}.")
         }
 
-        show(fragment)
+        show(item.itemId, fragment)
         true
     }
 
-    private fun show(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
+    private fun show(id: Int, fragment: Fragment) {
+        val transaction = supportFragmentManager.beginTransaction()
+
+//        if (currentNavigationFragment != -1 && currentNavigationFragment < id)
+//            transaction.setCustomAnimations(R.anim.slide_out_right, R.anim.slide_in_right)
+//        if (currentNavigationFragment != -1 && currentNavigationFragment > id)
+//            transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left)
+
+        transaction
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).replace(R.id.fragmentContainer, fragment)
             .commitAllowingStateLoss();
+
+        currentNavigationFragment = id
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         navigation.setOnNavigationItemSelectedListener(navigationListener)
-        show(HomeFragment())
+        show(0, HomeFragment())
     }
 }
