@@ -18,7 +18,7 @@ import org.jetbrains.anko.toast
 // https://developers.google.com/identity/sign-in/android/start-integrating
 // https://developers.google.com/identity/sign-in/android/sign-in
 
-val authenticationRequestCode = 1
+const val AUTHENTICATION_REQUEST_CODE = 1
 
 class AuthenticationActivity : AppCompatActivity(), AnkoLogger {
 
@@ -33,14 +33,14 @@ class AuthenticationActivity : AppCompatActivity(), AnkoLogger {
 
         authenticateButton.onClick {
             val signInIntent = googleSignInClient.signInIntent
-            startActivityForResult(signInIntent, authenticationRequestCode)
+            startActivityForResult(signInIntent, AUTHENTICATION_REQUEST_CODE)
         }
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            authenticationRequestCode -> {
+            AUTHENTICATION_REQUEST_CODE -> {
                 val task = GoogleSignIn.getSignedInAccountFromIntent(data)
                 handleSignInResult(task)
             }

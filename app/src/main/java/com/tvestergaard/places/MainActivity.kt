@@ -3,18 +3,13 @@ package com.tvestergaard.places
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
-import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
 import android.support.v7.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import kotlinx.android.synthetic.main.activity_authentication.*
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.debug
-import org.jetbrains.anko.info
 import org.jetbrains.anko.toast
 import java.lang.RuntimeException
 
@@ -46,7 +41,7 @@ class MainActivity :
      */
     private fun promptAuthentication() {
         val intent = Intent(this, AuthenticationActivity::class.java)
-        startActivityForResult(intent, authenticationRequestCode)
+        startActivityForResult(intent, AUTHENTICATION_REQUEST_CODE)
     }
 
     /**
@@ -56,7 +51,7 @@ class MainActivity :
         super.onActivityResult(requestCode, resultCode, data)
 
         when (requestCode) {
-            authenticationRequestCode -> {
+            AUTHENTICATION_REQUEST_CODE -> {
                 if (data != null) {
                     account = data.extras["account"] as GoogleSignInAccount
                     toast("Authenticated as ${account!!.email}")
