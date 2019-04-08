@@ -13,8 +13,10 @@ import android.content.Intent
 import com.google.android.gms.common.api.ApiException
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
-import org.jetbrains.anko.info
 import org.jetbrains.anko.toast
+
+// https://developers.google.com/identity/sign-in/android/start-integrating
+// https://developers.google.com/identity/sign-in/android/sign-in
 
 val authenticationRequestCode = 1
 
