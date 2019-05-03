@@ -8,18 +8,18 @@ import android.support.v4.app.FragmentTransaction
 import android.support.v7.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.tvestergaard.places.fragments.CameraFragment
+import com.tvestergaard.places.fragments.ContributeFragment
+import com.tvestergaard.places.fragments.SearchFragment
+import com.tvestergaard.places.pages.AuthenticationActivity
+import com.tvestergaard.places.pages.AuthenticationActivity.Companion.authenticationRequestCode
+import com.tvestergaard.places.pages.HomeFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.toast
 import java.lang.RuntimeException
 
-class MainActivity :
-    AppCompatActivity(),
-    CameraFragment.Parent,
-    ContributeFragment.Parent,
-    HomeFragment.Parent,
-    SearchFragment.Parent,
-    AnkoLogger {
+class MainActivity : AppCompatActivity(), AnkoLogger {
 
     private var currentNavigationFragment = -1
     private var account: GoogleSignInAccount? = null
@@ -41,7 +41,7 @@ class MainActivity :
      */
     private fun promptAuthentication() {
         val intent = Intent(this, AuthenticationActivity::class.java)
-        startActivityForResult(intent, AUTHENTICATION_REQUEST_CODE)
+        startActivityForResult(intent, authenticationRequestCode)
     }
 
     /**
@@ -51,10 +51,10 @@ class MainActivity :
         super.onActivityResult(requestCode, resultCode, data)
 
         when (requestCode) {
-            AUTHENTICATION_REQUEST_CODE -> {
+            authenticationRequestCode -> {
                 if (data != null) {
                     account = data.extras["account"] as GoogleSignInAccount
-                    toast("Authenticated as ${account!!.email}")
+                    toast("Welcome ${account!!.givenName}")
                     show(0, HomeFragment())
                 }
             }
@@ -94,9 +94,15 @@ class MainActivity :
         val transaction = supportFragmentManager.beginTransaction()
 
         if (currentNavigationFragment != -1 && currentNavigationFragment < position)
-            transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left)
+            transaction.setCustomAnimations(
+                R.anim.slide_in_left,
+                R.anim.slide_out_left
+            )
         if (currentNavigationFragment != -1 && currentNavigationFragment > position)
-            transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_right)
+            transaction.setCustomAnimations(
+                R.anim.slide_in_right,
+                R.anim.slide_out_right
+            )
 
         transaction
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).replace(R.id.fragmentContainer, fragment)

@@ -1,4 +1,4 @@
-package com.tvestergaard.places
+package com.tvestergaard.places.pages
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -11,14 +11,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
 import android.content.Intent
 import com.google.android.gms.common.api.ApiException
+import com.tvestergaard.places.R
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
 import org.jetbrains.anko.toast
 
 // https://developers.google.com/identity/sign-in/android/start-integrating
 // https://developers.google.com/identity/sign-in/android/sign-in
-
-const val AUTHENTICATION_REQUEST_CODE = 1
 
 class AuthenticationActivity : AppCompatActivity(), AnkoLogger {
 
@@ -33,14 +32,14 @@ class AuthenticationActivity : AppCompatActivity(), AnkoLogger {
 
         authenticateButton.onClick {
             val signInIntent = googleSignInClient.signInIntent
-            startActivityForResult(signInIntent, AUTHENTICATION_REQUEST_CODE)
+            startActivityForResult(signInIntent, authenticationRequestCode)
         }
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            AUTHENTICATION_REQUEST_CODE -> {
+            authenticationRequestCode -> {
                 val task = GoogleSignIn.getSignedInAccountFromIntent(data)
                 handleSignInResult(task)
             }
@@ -55,12 +54,16 @@ class AuthenticationActivity : AppCompatActivity(), AnkoLogger {
             setResult(2, result)
             finish()
         } catch (e: ApiException) {
-            toast("You could not be authenticated.")
+            toast(getString(R.string.authenticationError))
             debug(e)
         }
     }
 
     override fun onBackPressed() {
         moveTaskToBack(true) // Prevent that the user can go back without successful authentication
+    }
+
+    companion object {
+        const val authenticationRequestCode = 1
     }
 }

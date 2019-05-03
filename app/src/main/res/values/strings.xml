@@ -5,4 +5,6 @@
     <string name="title_search">Search</string>
     <string name="title_camera">Camera</string>
     <string name="server_client_id">361668683148-f4fe5kh2o5h530f60q9v15pn67p858bh.apps.googleusercontent.com</string>
+    <string name="authenticationError">You could not be authenticated.</string>
+    <string name="pictureTakenSucess">The picture was successfully saved.</string>
 </resources>
