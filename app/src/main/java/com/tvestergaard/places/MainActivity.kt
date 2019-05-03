@@ -18,6 +18,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.toast
 import java.lang.RuntimeException
+import android.R.attr.data
+
+
 
 class MainActivity : AppCompatActivity(), AnkoLogger {
 
@@ -44,11 +47,21 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         startActivityForResult(intent, authenticationRequestCode)
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        for (fragment in supportFragmentManager.fragments) {
+            fragment.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
+    }
+
     /**
      * Called when the user successfully authenticates.
      */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        for (fragment in supportFragmentManager.fragments) {
+            fragment.onActivityResult(requestCode, resultCode, data)
+        }
 
         when (requestCode) {
             authenticationRequestCode -> {
@@ -60,6 +73,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
             }
         }
     }
+
 
     private fun createNavigationListener(): BottomNavigationView.OnNavigationItemSelectedListener {
         return BottomNavigationView.OnNavigationItemSelectedListener { item ->
