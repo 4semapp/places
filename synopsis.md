@@ -36,7 +36,7 @@ Frontend:
 
 Backend Endpoints
     HTTP
-    SQLLite w. Anko
+    SQLLite w. Exposed
     Ktor (RESTful clients)
 
 
