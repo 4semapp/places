@@ -85,7 +85,7 @@ class CameraFragment : Fragment(), AnkoLogger {
 
         @JvmStatic
         fun newInstance() =
-            ContributeFragment().apply {
+            CameraFragment().apply {
                 arguments = Bundle()
             }
     }
