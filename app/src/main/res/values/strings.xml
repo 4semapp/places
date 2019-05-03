@@ -3,9 +3,6 @@
     <string name="title_home">Home</string>
     <string name="title_contribute">Contribute</string>
     <string name="title_search">Search</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_camera">Camera</string>
-    <string name="new_picture">NEW PICTURE</string>
+    <string name="server_client_id">361668683148-f4fe5kh2o5h530f60q9v15pn67p858bh.apps.googleusercontent.com</string>
 </resources>
