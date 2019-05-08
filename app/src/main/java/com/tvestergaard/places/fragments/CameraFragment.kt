@@ -1,6 +1,5 @@
 package com.tvestergaard.places.fragments
 
-import android.Manifest
 import android.Manifest.permission.CAMERA
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.Activity.RESULT_OK
@@ -16,23 +15,18 @@ import kotlinx.android.synthetic.main.fragment_camera.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.support.v4.toast
-import android.net.Uri
 import com.tvestergaard.places.MainActivity
 import java.io.File
-import java.lang.Exception
 import android.support.v4.app.ActivityCompat
-import android.content.pm.PackageManager
-import android.support.v4.content.ContextCompat
-import android.annotation.SuppressLint
+import android.content.pm.PackageManager.PERMISSION_DENIED
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Environment
+import android.support.v4.app.FragmentTransaction
 import android.support.v4.content.ContextCompat.checkSelfPermission
 import android.support.v4.content.FileProvider
 import com.tvestergaard.places.BuildConfig
+import com.tvestergaard.places.R
 import com.tvestergaard.places.R.*
-import org.jetbrains.anko.debug
-import org.jetbrains.anko.error
-import org.jetbrains.anko.info
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -46,6 +40,11 @@ import java.util.*
 class CameraFragment : Fragment(), AnkoLogger {
 
     private var parent: MainActivity? = null
+    private var mediaStorageDir = File(
+        Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_PICTURES
+        ), subdirectoryName
+    )
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(layout.fragment_camera, container, false)
@@ -57,57 +56,59 @@ class CameraFragment : Fragment(), AnkoLogger {
             dispatchTakePictureIntent()
         }
 
-        val checkCameraPermission = checkSelfPermission(parent!!, CAMERA) != PERMISSION_GRANTED
-        val checkExternalStoragePermission = checkSelfPermission(parent!!, WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED
+        val checkCameraPermission = isGranted(checkSelfPermission(parent!!, CAMERA))
+        val checkExternalStoragePermission = isGranted(checkSelfPermission(parent!!, WRITE_EXTERNAL_STORAGE))
 
         if (checkCameraPermission && checkExternalStoragePermission) {
             newPictureButton.isEnabled = false
-            ActivityCompat.requestPermissions(
-                parent!!,
-                arrayOf(CAMERA, WRITE_EXTERNAL_STORAGE),
-                requestPermissionsCode
-            )
-        } else {
-            newPictureButton.isEnabled = true
+            ActivityCompat.requestPermissions(parent!!, arrayOf(CAMERA, WRITE_EXTERNAL_STORAGE), requestPermissionsCode)
         }
+
+
+        val galleryFragment = GalleryFragment()
+        galleryFragment.imageDirectory = mediaStorageDir
+
+        val transaction = parent!!.supportFragmentManager.beginTransaction()
+        transaction
+            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+            .replace(R.id.galleryFragmentContainer, galleryFragment)
+            .commitAllowingStateLoss()
+
+        // TODO: set height of to match viewheight - button
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-
         if (requestCode == requestPermissionsCode) {
-            if (
-                grantResults.isNotEmpty() &&
-                grantResults[0] == PERMISSION_GRANTED &&
-                grantResults[1] == PERMISSION_GRANTED
-            ) {
+            if (isGranted(grantResults)) {
                 newPictureButton.isEnabled = true
             }
         }
     }
 
-    private fun dispatchTakePictureIntent() {
-        try {
-            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            val file = getOutputMediaFile() ?: return
-            val uri = toUri(file)
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
-            startActivityForResult(intent, requestImageCaptureCode)
-        } catch (e: Exception) {
-            info("Failed", e)
-        }
+    private fun isGranted(code: Int): Boolean {
+        return code == PERMISSION_GRANTED
     }
 
-    @SuppressLint("SimpleDateFormat")
+    private fun isGranted(codes: IntArray): Boolean {
+        for (code in codes)
+            if (code == PERMISSION_DENIED)
+                return false
+
+        return true
+    }
+
+    private fun dispatchTakePictureIntent() {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        val file = getOutputMediaFile() ?: return
+        val uri = toUri(file)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+        startActivityForResult(intent, requestImageCaptureCode)
+    }
+
     private fun getOutputMediaFile(): File? {
-        val mediaStorageDir = File(
-            Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES
-            ), directoryName
-        )
 
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
-                error("Could not create directories for picture")
                 return null
             }
         }
@@ -118,19 +119,15 @@ class CameraFragment : Fragment(), AnkoLogger {
         )
     }
 
-    private fun toUri(file: File): Uri {
-        return FileProvider.getUriForFile(
-            parent!!,
-            BuildConfig.APPLICATION_ID + ".provider",
-            file
-        )
-    }
+    /**
+     * Returns the write-safe uri for the provided file.
+     */
+    private fun toUri(file: File) =
+        FileProvider.getUriForFile(parent!!, fileProviderName, file)
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == requestImageCaptureCode && resultCode == RESULT_OK) {
             toast(string.pictureTakenSucess)
-        } else {
-            toast("Could not take picture.")
         }
     }
 
@@ -149,7 +146,8 @@ class CameraFragment : Fragment(), AnkoLogger {
 
         const val requestPermissionsCode = 0
         const val requestImageCaptureCode = 1
-        const val directoryName = "places"
+        const val subdirectoryName = "places"
+        const val fileProviderName = "${BuildConfig.APPLICATION_ID}.provider"
 
         @JvmStatic
         fun newInstance() =

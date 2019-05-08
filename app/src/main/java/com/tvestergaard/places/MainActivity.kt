@@ -18,8 +18,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.toast
 import java.lang.RuntimeException
-import android.R.attr.data
-
 
 
 class MainActivity : AppCompatActivity(), AnkoLogger {

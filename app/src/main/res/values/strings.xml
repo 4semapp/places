@@ -7,4 +7,5 @@
     <string name="server_client_id">361668683148-f4fe5kh2o5h530f60q9v15pn67p858bh.apps.googleusercontent.com</string>
     <string name="authenticationError">You could not be authenticated.</string>
     <string name="pictureTakenSucess">The picture was successfully saved.</string>
+    <string name="takePicture">Take Picture</string>
 </resources>
