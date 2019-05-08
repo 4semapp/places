@@ -40,11 +40,14 @@ import java.util.*
 class CameraFragment : Fragment(), AnkoLogger {
 
     private var parent: MainActivity? = null
+    private var takenPicture: File? = null
     private var mediaStorageDir = File(
         Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_PICTURES
         ), subdirectoryName
     )
+
+    private var gallery = GalleryFragment.create(null, mediaStorageDir)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(layout.fragment_camera, container, false)
@@ -64,14 +67,10 @@ class CameraFragment : Fragment(), AnkoLogger {
             ActivityCompat.requestPermissions(parent!!, arrayOf(CAMERA, WRITE_EXTERNAL_STORAGE), requestPermissionsCode)
         }
 
-
-        val galleryFragment = GalleryFragment()
-        galleryFragment.imageDirectory = mediaStorageDir
-
         val transaction = parent!!.supportFragmentManager.beginTransaction()
         transaction
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-            .replace(R.id.galleryFragmentContainer, galleryFragment)
+            .replace(R.id.galleryFragmentContainer, gallery)
             .commitAllowingStateLoss()
 
         // TODO: set height of to match viewheight - button
@@ -114,9 +113,11 @@ class CameraFragment : Fragment(), AnkoLogger {
         }
 
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        return File(
+        takenPicture = File(
             mediaStorageDir.path + File.separator + "IMG_" + timeStamp + ".jpg"
         )
+
+        return takenPicture
     }
 
     /**
@@ -128,6 +129,10 @@ class CameraFragment : Fragment(), AnkoLogger {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == requestImageCaptureCode && resultCode == RESULT_OK) {
             toast(string.pictureTakenSucess)
+            if (takenPicture != null) {
+                gallery.addImage(takenPicture!!)
+                takenPicture = null
+            }
         }
     }
 

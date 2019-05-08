@@ -15,8 +15,8 @@ import java.io.File
 class GalleryFragment : Fragment() {
 
 
-    var listener: Listener? = null
-    var imageDirectory: File? = null
+    private var listener: Listener? = null
+    private var imageDirectory: File? = null
     private var columnCount = 1
     private lateinit var adapter: ImageRecyclerViewAdapter
     private val images: MutableList<Image> = ArrayList()
@@ -44,6 +44,11 @@ class GalleryFragment : Fragment() {
         return directory.listFiles()
     }
 
+    fun addImage(image: File) {
+        this.images.add(Image(image))
+        this.adapter.notifyDataSetChanged()
+    }
+
     private fun addImages(images: Array<out File>) {
         this.images.addAll(images.map { Image(it) })
         this.adapter.notifyDataSetChanged()
@@ -60,5 +65,14 @@ class GalleryFragment : Fragment() {
 
     data class Image(val file: File) {
         override fun toString(): String = file.absolutePath
+    }
+
+    companion object {
+        fun create(listener: Listener? = null, imageDirectory: File? = null): GalleryFragment {
+            val fragment = GalleryFragment()
+            fragment.listener = listener
+            fragment.imageDirectory = imageDirectory
+            return fragment
+        }
     }
 }
