@@ -14,6 +14,7 @@ import com.google.android.gms.common.api.ApiException
 import com.tvestergaard.places.R
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
+import org.jetbrains.anko.error
 import org.jetbrains.anko.toast
 
 // https://developers.google.com/identity/sign-in/android/start-integrating
@@ -54,8 +55,8 @@ class AuthenticationActivity : AppCompatActivity(), AnkoLogger {
             setResult(2, result)
             finish()
         } catch (e: ApiException) {
+            error("Could not authenticate with error code ${e.statusCode}")
             toast(getString(R.string.authenticationError))
-            debug(e)
         }
     }
 

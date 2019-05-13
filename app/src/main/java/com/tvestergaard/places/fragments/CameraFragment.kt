@@ -20,6 +20,8 @@ import java.io.File
 import android.support.v4.app.ActivityCompat
 import android.content.pm.PackageManager.PERMISSION_DENIED
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.graphics.BitmapFactory
+import android.media.ThumbnailUtils
 import android.os.Environment
 import android.support.v4.app.FragmentTransaction
 import android.support.v4.content.ContextCompat.checkSelfPermission
@@ -27,8 +29,13 @@ import android.support.v4.content.FileProvider
 import com.tvestergaard.places.BuildConfig
 import com.tvestergaard.places.R
 import com.tvestergaard.places.R.*
+import net.coobird.thumbnailator.Thumbnails
 import java.text.SimpleDateFormat
 import java.util.*
+import android.graphics.Bitmap
+import android.graphics.Matrix
+import android.widget.LinearLayout
+import java.io.FileOutputStream
 
 
 // https://developer.android.com/training/camera/photobasics
@@ -73,7 +80,9 @@ class CameraFragment : Fragment(), AnkoLogger {
             .replace(R.id.galleryFragmentContainer, gallery)
             .commitAllowingStateLoss()
 
-        // TODO: set height of to match viewheight - button
+        // Set height of gallery, could not accomplish using xml layout
+        val display = parent!!.windowManager.getDefaultDisplay();
+        galleryScrollContainer.layoutParams = LinearLayout.LayoutParams(display.width, display.height - 400)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -130,9 +139,19 @@ class CameraFragment : Fragment(), AnkoLogger {
         if (requestCode == requestImageCaptureCode && resultCode == RESULT_OK) {
             toast(string.pictureTakenSucess)
             if (takenPicture != null) {
-                gallery.addImage(takenPicture!!)
+                compress(takenPicture!!)
                 takenPicture = null
             }
+        }
+    }
+
+    private fun compress(file: File) {
+        val inputBitmap = BitmapFactory.decodeFile(file.absolutePath)
+        val outputBitmap = ThumbnailUtils.extractThumbnail(inputBitmap, 500, 500)
+        val outputFile = File(file.parentFile.absolutePath + "/thumb_" + file.name)
+        FileOutputStream(outputFile).use { out ->
+            outputBitmap.compress(Bitmap.CompressFormat.JPEG, 85, out)
+            gallery.addImage(outputFile)
         }
     }
 

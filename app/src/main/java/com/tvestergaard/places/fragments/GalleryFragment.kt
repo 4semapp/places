@@ -17,7 +17,7 @@ class GalleryFragment : Fragment() {
 
     private var listener: Listener? = null
     private var imageDirectory: File? = null
-    private var columnCount = 1
+    private var columnCount = 2
     private lateinit var adapter: ImageRecyclerViewAdapter
     private val images: MutableList<Image> = ArrayList()
 
@@ -34,14 +34,14 @@ class GalleryFragment : Fragment() {
         }
 
         if (imageDirectory != null) {
-            addImages(readImages(imageDirectory!!))
+            addImages(readImages(imageDirectory!!).toTypedArray())
         }
 
         return view
     }
 
-    private fun readImages(directory: File): Array<out File> {
-        return directory.listFiles()
+    private fun readImages(directory: File): List<File> {
+        return directory.listFiles().filter { it -> it.name.contains("thumb_") }
     }
 
     fun addImage(image: File) {
