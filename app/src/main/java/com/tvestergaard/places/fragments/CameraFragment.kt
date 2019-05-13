@@ -29,7 +29,6 @@ import android.support.v4.content.FileProvider
 import com.tvestergaard.places.BuildConfig
 import com.tvestergaard.places.R
 import com.tvestergaard.places.R.*
-import net.coobird.thumbnailator.Thumbnails
 import java.text.SimpleDateFormat
 import java.util.*
 import android.graphics.Bitmap
