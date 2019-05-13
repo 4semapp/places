@@ -2,6 +2,7 @@ package com.tvestergaard.places
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
@@ -17,12 +18,13 @@ import com.tvestergaard.places.pages.HomeFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.toast
+import pyxis.uzuki.live.richutilskt.utils.put
 import java.lang.RuntimeException
 
 
 class MainActivity : AppCompatActivity(), AnkoLogger {
 
-    private var currentNavigationFragment = -1
+    private var currentNavigationFragment = DEFAULT_FRAGMENT
     private var account: GoogleSignInAccount? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,11 +32,21 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         setContentView(R.layout.activity_main)
         navigation.setOnNavigationItemSelectedListener(createNavigationListener())
 
+        currentNavigationFragment = if (savedInstanceState != null)
+            savedInstanceState.getInt(CURRENT_NAVIGATION_BUNDLE_KEY, DEFAULT_FRAGMENT)
+        else
+            DEFAULT_FRAGMENT
+
         account = GoogleSignIn.getLastSignedInAccount(this)
         if (account != null)
-            show(0, HomeFragment())
+            show(currentNavigationFragment)
         else
             promptAuthentication()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        outState!!.put(CURRENT_NAVIGATION_BUNDLE_KEY, currentNavigationFragment)
     }
 
     /**
@@ -66,25 +78,24 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
                 if (data != null) {
                     account = data.extras["account"] as GoogleSignInAccount
                     toast("Welcome ${account!!.givenName}")
-                    show(0, HomeFragment())
+                    show(DEFAULT_FRAGMENT)
                 }
             }
         }
     }
 
+    private fun getFragmentFromId(id: Int) = when (id) {
+        1 -> HomeFragment.newInstance()
+        2 -> CameraFragment.newInstance()
+        3 -> SearchFragment.newInstance()
+        4 -> ContributeFragment.newInstance()
+        else -> throw RuntimeException("unhandled fragment type $id.")
+    }
 
     private fun createNavigationListener(): BottomNavigationView.OnNavigationItemSelectedListener {
         return BottomNavigationView.OnNavigationItemSelectedListener { item ->
-
-            val fragment: Fragment = when (item.itemId) {
-                R.id.navigation_home -> HomeFragment.newInstance()
-                R.id.navigation_search -> SearchFragment.newInstance()
-                R.id.navigation_contribute -> ContributeFragment.newInstance()
-                R.id.navigation_camera -> CameraFragment.newInstance()
-                else -> throw RuntimeException("unhandled fragment type ${item.itemId}.")
-            }
-
-            show(item.itemId, fragment)
+            val navigationId = getPositionalItem(item.itemId)
+            show(navigationId)
             true
         }
     }
@@ -95,22 +106,21 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
             R.id.navigation_camera -> 2
             R.id.navigation_search -> 3
             R.id.navigation_contribute -> 4
-            else -> -1
+            else -> DEFAULT_FRAGMENT
         }
     }
 
-    private fun show(id: Int, fragment: Fragment) {
+    private fun show(id: Int) {
 
-        val position = getPositionalItem(id)
-
+        val fragment = getFragmentFromId(id)
         val transaction = supportFragmentManager.beginTransaction()
 
-        if (currentNavigationFragment != -1 && currentNavigationFragment < position)
+        if (currentNavigationFragment < id)
             transaction.setCustomAnimations(
                 R.anim.slide_in_left,
                 R.anim.slide_out_left
             )
-        if (currentNavigationFragment != -1 && currentNavigationFragment > position)
+        if (currentNavigationFragment > id)
             transaction.setCustomAnimations(
                 R.anim.slide_in_right,
                 R.anim.slide_out_right
@@ -120,6 +130,11 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).replace(R.id.fragmentContainer, fragment)
             .commitAllowingStateLoss()
 
-        currentNavigationFragment = position
+        currentNavigationFragment = id
+    }
+
+    companion object {
+        const val DEFAULT_FRAGMENT = 1
+        const val CURRENT_NAVIGATION_BUNDLE_KEY = "currentNavigationFragment"
     }
 }
