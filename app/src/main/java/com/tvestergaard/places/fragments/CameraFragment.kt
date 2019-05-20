@@ -2,6 +2,7 @@ package com.tvestergaard.places.fragments
 
 import android.Manifest.permission.CAMERA
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
@@ -29,12 +30,14 @@ import android.support.v4.content.FileProvider
 import com.tvestergaard.places.BuildConfig
 import com.tvestergaard.places.R
 import com.tvestergaard.places.R.*
-import java.text.SimpleDateFormat
-import java.util.*
 import android.graphics.Bitmap
-import android.graphics.Matrix
+import android.util.DisplayMetrics
 import android.widget.LinearLayout
+import kotlinx.android.synthetic.main.activity_main.*
 import java.io.FileOutputStream
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 
 // https://developer.android.com/training/camera/photobasics
@@ -45,7 +48,7 @@ import java.io.FileOutputStream
 
 class CameraFragment : Fragment(), AnkoLogger {
 
-    private var parent: MainActivity? = null
+    private lateinit var parent: MainActivity
     private var takenPicture: File? = null
     private var mediaStorageDir = File(
         Environment.getExternalStoragePublicDirectory(
@@ -61,36 +64,49 @@ class CameraFragment : Fragment(), AnkoLogger {
 
     override fun onStart() {
         super.onStart()
+
+        if (!hasPermissions()) {
+            newPictureButton.isEnabled = false
+            ActivityCompat.requestPermissions(parent, arrayOf(CAMERA, WRITE_EXTERNAL_STORAGE), requestPermissionsCode)
+        } else {
+            newPictureButton.isEnabled = true
+            loadStoredImages()
+        }
+
         newPictureButton.onClick {
             dispatchTakePictureIntent()
         }
-
-        val checkCameraPermission = isGranted(checkSelfPermission(parent!!, CAMERA))
-        val checkExternalStoragePermission = isGranted(checkSelfPermission(parent!!, WRITE_EXTERNAL_STORAGE))
-
-        if (checkCameraPermission && checkExternalStoragePermission) {
-            newPictureButton.isEnabled = false
-            ActivityCompat.requestPermissions(parent!!, arrayOf(CAMERA, WRITE_EXTERNAL_STORAGE), requestPermissionsCode)
-        }
-
-        val transaction = parent!!.supportFragmentManager.beginTransaction()
-        transaction
-            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-            .replace(R.id.galleryFragmentContainer, gallery)
-            .commitAllowingStateLoss()
-
-        // Set height of gallery, could not accomplish using xml layout
-        val display = parent!!.windowManager.getDefaultDisplay();
-        galleryScrollContainer.layoutParams = LinearLayout.LayoutParams(display.width, display.height - 400)
     }
 
+    /**
+     * Checks if the application has all necessary permissions.
+     */
+    private fun hasPermissions(): Boolean {
+        return isGranted(checkSelfPermission(parent, CAMERA)) &&
+                isGranted(checkSelfPermission(parent, WRITE_EXTERNAL_STORAGE))
+    }
+
+    /**
+     * Loads images and enables the 'take picture' button, when permissions have been granted.
+     */
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == requestPermissionsCode) {
             if (isGranted(grantResults)) {
                 newPictureButton.isEnabled = true
+                loadStoredImages()
             }
         }
     }
+
+    private fun loadStoredImages() {
+
+        parent
+            .supportFragmentManager.beginTransaction()
+            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+            .replace(R.id.galleryFragmentContainer, gallery)
+            .commitAllowingStateLoss()
+    }
+
 
     private fun isGranted(code: Int): Boolean {
         return code == PERMISSION_GRANTED
@@ -120,7 +136,10 @@ class CameraFragment : Fragment(), AnkoLogger {
             }
         }
 
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val timeStamp = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
+            .withZone(ZoneOffset.UTC)
+            .format(Instant.now())
+
         takenPicture = File(
             mediaStorageDir.path + File.separator + "IMG_" + timeStamp + ".jpg"
         )
@@ -132,7 +151,7 @@ class CameraFragment : Fragment(), AnkoLogger {
      * Returns the write-safe uri for the provided file.
      */
     private fun toUri(file: File) =
-        FileProvider.getUriForFile(parent!!, fileProviderName, file)
+        FileProvider.getUriForFile(parent, fileProviderName, file)
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == requestImageCaptureCode && resultCode == RESULT_OK) {
@@ -158,11 +177,6 @@ class CameraFragment : Fragment(), AnkoLogger {
         super.onAttach(context)
         if (context is MainActivity)
             parent = context
-    }
-
-    override fun onDetach() {
-        parent = null
-        super.onDetach()
     }
 
     companion object {

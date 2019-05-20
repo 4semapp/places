@@ -41,7 +41,10 @@ class GalleryFragment : Fragment() {
     }
 
     private fun readImages(directory: File): List<File> {
-        return directory.listFiles().filter { it -> it.name.contains("thumb_") }
+        if (!directory.exists())
+            return ArrayList(0)
+
+        return directory.listFiles().filter { it.name.contains("thumb_") }
     }
 
     fun addImage(image: File) {
