@@ -56,7 +56,7 @@ class CameraFragment : Fragment(), AnkoLogger {
         ), subdirectoryName
     )
 
-    private var gallery = GalleryFragment.create(null, mediaStorageDir)
+    private var gallery = GalleryFragment.create(mediaStorageDir)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(layout.fragment_camera, container, false)
@@ -136,7 +136,7 @@ class CameraFragment : Fragment(), AnkoLogger {
             }
         }
 
-        val timeStamp = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
+        val timeStamp = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss")
             .withZone(ZoneOffset.UTC)
             .format(Instant.now())
 
