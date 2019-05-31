@@ -12,10 +12,7 @@ import com.google.android.gms.tasks.Task
 import android.content.Intent
 import com.google.android.gms.common.api.ApiException
 import com.tvestergaard.places.R
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.debug
-import org.jetbrains.anko.error
-import org.jetbrains.anko.toast
+import org.jetbrains.anko.*
 
 // https://developers.google.com/identity/sign-in/android/start-integrating
 // https://developers.google.com/identity/sign-in/android/sign-in
@@ -51,8 +48,9 @@ class AuthenticationActivity : AppCompatActivity(), AnkoLogger {
         try {
             val account = authenticationAttempt.getResult(ApiException::class.java)
             val result = Intent()
+            info("Token=${account!!.idToken}")
             result.putExtra("account", account)
-            setResult(2, result)
+            setResult(2, result) // 2 == OK
             finish()
         } catch (e: ApiException) {
             error("Could not authenticate with error code ${e.statusCode}")

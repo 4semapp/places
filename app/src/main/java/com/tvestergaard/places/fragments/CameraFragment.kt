@@ -2,7 +2,6 @@ package com.tvestergaard.places.fragments
 
 import android.Manifest.permission.CAMERA
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
@@ -31,9 +30,6 @@ import com.tvestergaard.places.BuildConfig
 import com.tvestergaard.places.R
 import com.tvestergaard.places.R.*
 import android.graphics.Bitmap
-import android.util.DisplayMetrics
-import android.widget.LinearLayout
-import kotlinx.android.synthetic.main.activity_main.*
 import java.io.FileOutputStream
 import java.time.Instant
 import java.time.ZoneOffset
@@ -157,13 +153,13 @@ class CameraFragment : Fragment(), AnkoLogger {
         if (requestCode == requestImageCaptureCode && resultCode == RESULT_OK) {
             toast(string.pictureTakenSucess)
             if (takenPicture != null) {
-                compress(takenPicture!!)
+                thumbnail(takenPicture!!)
                 takenPicture = null
             }
         }
     }
 
-    private fun compress(file: File) {
+    private fun thumbnail(file: File) {
         val inputBitmap = BitmapFactory.decodeFile(file.absolutePath)
         val outputBitmap = ThumbnailUtils.extractThumbnail(inputBitmap, 500, 500)
         val outputFile = File(file.parentFile.absolutePath + "/thumb_" + file.name)

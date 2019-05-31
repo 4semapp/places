@@ -17,6 +17,7 @@ import com.tvestergaard.places.pages.AuthenticationActivity.Companion.authentica
 import com.tvestergaard.places.pages.HomeFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.info
 import org.jetbrains.anko.toast
 import pyxis.uzuki.live.richutilskt.utils.put
 import java.lang.RuntimeException
@@ -38,9 +39,10 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
             DEFAULT_FRAGMENT
 
         account = GoogleSignIn.getLastSignedInAccount(this)
-        if (account != null)
+        if (account != null) {
+            info("Token=${account!!.idToken}")
             show(currentNavigationFragment)
-        else
+        } else
             promptAuthentication()
     }
 
@@ -77,7 +79,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
             authenticationRequestCode -> {
                 if (data != null) {
                     account = data.extras["account"] as GoogleSignInAccount
-                    toast("Welcome ${account!!.givenName}")
+                    info("Token: ${account!!.idToken}")
                     show(DEFAULT_FRAGMENT)
                 }
             }
