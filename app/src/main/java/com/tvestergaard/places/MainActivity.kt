@@ -40,7 +40,6 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
 
         account = GoogleSignIn.getLastSignedInAccount(this)
         if (account != null) {
-            info("Token=${account!!.idToken}")
             show(currentNavigationFragment)
         } else
             promptAuthentication()

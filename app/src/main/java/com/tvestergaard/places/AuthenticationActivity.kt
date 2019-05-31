@@ -25,7 +25,9 @@ class AuthenticationActivity : AppCompatActivity(), AnkoLogger {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_authentication)
-        gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build()
+        gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken("361668683148-casfe6p1qcgpf8s5aa2cg2tr6qvstdg0.apps.googleusercontent.com")
+            .requestEmail().build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         authenticateButton.onClick {
@@ -48,7 +50,6 @@ class AuthenticationActivity : AppCompatActivity(), AnkoLogger {
         try {
             val account = authenticationAttempt.getResult(ApiException::class.java)
             val result = Intent()
-            info("Token=${account!!.idToken}")
             result.putExtra("account", account)
             setResult(2, result) // 2 == OK
             finish()
@@ -60,6 +61,10 @@ class AuthenticationActivity : AppCompatActivity(), AnkoLogger {
 
     override fun onBackPressed() {
         moveTaskToBack(true) // Prevent that the user can go back without successful authentication
+    }
+
+    private fun authenticateBackend(token: String){
+
     }
 
     companion object {
