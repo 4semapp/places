@@ -3,20 +3,19 @@ package com.tvestergaard.places
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
-import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
 import android.support.v7.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.tvestergaard.places.fragments.CameraFragment
 import com.tvestergaard.places.fragments.ContributeFragment
 import com.tvestergaard.places.fragments.SearchFragment
+import com.tvestergaard.places.pages.AuthenticatedUser
 import com.tvestergaard.places.pages.AuthenticationActivity
 import com.tvestergaard.places.pages.AuthenticationActivity.Companion.authenticationRequestCode
 import com.tvestergaard.places.pages.HomeFragment
+import com.tvestergaard.places.transport.BackendCommunicator
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.info
 import org.jetbrains.anko.toast
 import pyxis.uzuki.live.richutilskt.utils.put
 import java.lang.RuntimeException
@@ -25,7 +24,7 @@ import java.lang.RuntimeException
 class MainActivity : AppCompatActivity(), AnkoLogger {
 
     private var currentNavigationFragment = DEFAULT_FRAGMENT
-    private var account: GoogleSignInAccount? = null
+    private var account: AuthenticatedUser? = null
     private var currentFragment: Fragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +37,10 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         else
             DEFAULT_FRAGMENT
 
-        account = GoogleSignIn.getLastSignedInAccount(this)
+        val lastSignIn = GoogleSignIn.getLastSignedInAccount(this)
+        if (lastSignIn != null)
+            account = BackendCommunicator().authenticateWithBackend(lastSignIn.idToken)
+
         if (account != null) {
             show(currentNavigationFragment)
         } else
@@ -86,9 +88,13 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         when (requestCode) {
             authenticationRequestCode -> {
                 if (data != null) {
-                    account = data.extras["account"] as GoogleSignInAccount
-                    info("Token: ${account!!.idToken}")
-                    show(DEFAULT_FRAGMENT)
+                    account = data.extras["account"] as AuthenticatedUser
+                    if (account != null) {
+                        toast("Welcome back ${account!!.name}")
+                        show(DEFAULT_FRAGMENT)
+                    } else {
+                        toast("You could not be authenticated.")
+                    }
                 }
             }
         }

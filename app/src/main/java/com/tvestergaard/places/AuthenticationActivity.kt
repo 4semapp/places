@@ -11,11 +11,26 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
 import android.content.Intent
 import com.google.android.gms.common.api.ApiException
+import com.google.gson.GsonBuilder
 import com.tvestergaard.places.R
+import com.tvestergaard.places.transport.BackendCommunicator
 import org.jetbrains.anko.*
+import java.io.Serializable
 
 // https://developers.google.com/identity/sign-in/android/start-integrating
 // https://developers.google.com/identity/sign-in/android/sign-in
+
+data class AuthenticatedUser(
+    var id: Int,
+    var googleId: String,
+    var name: String,
+    var email: String,
+    var picture: String,
+    var locale: String,
+    var token: String
+) : Serializable
+
+val gson = GsonBuilder().create()
 
 class AuthenticationActivity : AppCompatActivity(), AnkoLogger {
 
@@ -51,9 +66,14 @@ class AuthenticationActivity : AppCompatActivity(), AnkoLogger {
         try {
             val account = authenticationAttempt.getResult(ApiException::class.java)
             val result = Intent()
-            result.putExtra("account", account)
-            setResult(2, result) // 2 == OK
-            finish()
+            doAsync {
+                val backendAuthenticationUser = BackendCommunicator().authenticateWithBackend(account?.idToken)
+                runOnUiThread {
+                    result.putExtra("account", backendAuthenticationUser)
+                    setResult(2, result) // 2 == OK
+                    finish()
+                }
+            }
         } catch (e: ApiException) {
             error("Could not authenticate with error code ${e.statusCode}")
             toast(getString(R.string.authenticationError))
@@ -62,10 +82,6 @@ class AuthenticationActivity : AppCompatActivity(), AnkoLogger {
 
     override fun onBackPressed() {
         moveTaskToBack(true) // Prevent that the user can go back without successful authentication
-    }
-
-    private fun authenticateBackend(token: String){
-
     }
 
     companion object {
