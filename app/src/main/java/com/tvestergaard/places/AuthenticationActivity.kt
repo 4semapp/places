@@ -51,7 +51,6 @@ class AuthenticationActivity : AppCompatActivity(), AnkoLogger {
         try {
             val account = authenticationAttempt.getResult(ApiException::class.java)
             val result = Intent()
-            info("Token=${account!!.idToken}")
             result.putExtra("account", account)
             setResult(2, result) // 2 == OK
             finish()
@@ -63,6 +62,10 @@ class AuthenticationActivity : AppCompatActivity(), AnkoLogger {
 
     override fun onBackPressed() {
         moveTaskToBack(true) // Prevent that the user can go back without successful authentication
+    }
+
+    private fun authenticateBackend(token: String){
+
     }
 
     companion object {
