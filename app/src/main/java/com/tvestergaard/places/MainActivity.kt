@@ -39,9 +39,9 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
             DEFAULT_FRAGMENT
 
         account = GoogleSignIn.getLastSignedInAccount(this)
-        if (account != null)
+        if (account != null) {
             show(currentNavigationFragment)
-        else
+        } else
             promptAuthentication()
 
         if (savedInstanceState != null) {
@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
             authenticationRequestCode -> {
                 if (data != null) {
                     account = data.extras["account"] as GoogleSignInAccount
-                    toast("Welcome ${account!!.givenName}")
+                    info("Token: ${account!!.idToken}")
                     show(DEFAULT_FRAGMENT)
                 }
             }

@@ -12,10 +12,7 @@ import com.google.android.gms.tasks.Task
 import android.content.Intent
 import com.google.android.gms.common.api.ApiException
 import com.tvestergaard.places.R
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.debug
-import org.jetbrains.anko.error
-import org.jetbrains.anko.toast
+import org.jetbrains.anko.*
 
 // https://developers.google.com/identity/sign-in/android/start-integrating
 // https://developers.google.com/identity/sign-in/android/sign-in
@@ -28,7 +25,10 @@ class AuthenticationActivity : AppCompatActivity(), AnkoLogger {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_authentication)
-        gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build()
+        gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken("361668683148-casfe6p1qcgpf8s5aa2cg2tr6qvstdg0.apps.googleusercontent.com")
+            .requestEmail()
+            .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         authenticateButton.onClick {
@@ -52,7 +52,7 @@ class AuthenticationActivity : AppCompatActivity(), AnkoLogger {
             val account = authenticationAttempt.getResult(ApiException::class.java)
             val result = Intent()
             result.putExtra("account", account)
-            setResult(2, result)
+            setResult(2, result) // 2 == OK
             finish()
         } catch (e: ApiException) {
             error("Could not authenticate with error code ${e.statusCode}")
@@ -62,6 +62,10 @@ class AuthenticationActivity : AppCompatActivity(), AnkoLogger {
 
     override fun onBackPressed() {
         moveTaskToBack(true) // Prevent that the user can go back without successful authentication
+    }
+
+    private fun authenticateBackend(token: String){
+
     }
 
     companion object {
