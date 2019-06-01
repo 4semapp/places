@@ -12,7 +12,6 @@ import android.os.Environment
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
 import android.support.v4.content.ContextCompat.checkSelfPermission
-import android.support.v4.content.ContextCompat.getSystemService
 import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
@@ -133,7 +132,7 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
         if (location != null) {
             currentLocation = location
             numberOfUpdates++
-            updateDisplay(location)
+            //updateDisplay(location)
         }
     }
 
@@ -232,6 +231,7 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
     }
 
     //not used
+    /*
     private fun updateDisplay(location: Location?) {
         if (location != null) {
             editTitle.setText("Test1")
@@ -239,7 +239,7 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
             editLon.setText(location.longitude.toString())
             editLat.setText(location.latitude.toString())
         }
-    }
+    }*/
 
 
 }

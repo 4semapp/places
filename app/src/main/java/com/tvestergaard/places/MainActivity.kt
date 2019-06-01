@@ -3,6 +3,7 @@ package com.tvestergaard.places
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
+import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
 import android.support.v7.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -16,6 +17,8 @@ import com.tvestergaard.places.pages.HomeFragment
 import com.tvestergaard.places.transport.BackendCommunicator
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.info
 import org.jetbrains.anko.toast
 import pyxis.uzuki.live.richutilskt.utils.put
 import java.lang.RuntimeException
@@ -37,19 +40,21 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         else
             DEFAULT_FRAGMENT
 
-        val lastSignIn = GoogleSignIn.getLastSignedInAccount(this)
-        if (lastSignIn != null)
-            account = BackendCommunicator().authenticateWithBackend(lastSignIn.idToken)
+        doAsync {
+            val lastSignIn = GoogleSignIn.getLastSignedInAccount(this@MainActivity)
 
-        if (account != null) {
-            show(currentNavigationFragment)
-        } else
-            promptAuthentication()
+            if (lastSignIn != null)
 
-        if (savedInstanceState != null) {
-            var fragContent = supportFragmentManager.getFragment(savedInstanceState, "currentFragment")
-            info("-----")
-            info(fragContent)
+                account = BackendCommunicator().authenticateWithBackend(lastSignIn.idToken)
+
+            if (account != null) {
+                show(currentNavigationFragment)
+            } else
+                promptAuthentication()
+
+            if (savedInstanceState != null) {
+                var fragContent = supportFragmentManager.getFragment(savedInstanceState, "currentFragment")
+            }
         }
     }
 
@@ -57,8 +62,9 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         super.onSaveInstanceState(outState)
         outState!!.put(CURRENT_NAVIGATION_BUNDLE_KEY, currentNavigationFragment)
 
-        supportFragmentManager.putFragment(outState, "currentFragment", currentFragment!!)
-
+        if (currentFragment != null) {
+            supportFragmentManager.putFragment(outState, "currentFragment", currentFragment!!)
+        }
     }
 
     /**
