@@ -7,7 +7,7 @@ android {
         config {
             keyAlias 'key0'
             keyPassword '123456'
-            storeFile file('./keystore.jks')
+            storeFile file('../keystore.jks')
             storePassword '123456'
         }
     }
@@ -49,4 +49,11 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation 'com.google.android.gms:play-services-location:11.8.0'
+    implementation 'com.google.android.gms:play-services-maps:11.8.0'
+    // https://mvnrepository.com/artifact/khttp/khttp
+    implementation group: 'khttp', name: 'khttp', version: '1.0.0'
+
+
 }

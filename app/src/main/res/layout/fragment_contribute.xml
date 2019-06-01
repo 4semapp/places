@@ -1,12 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context=".fragments.ContributeFragment">
-    <TextView
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context=".fragments.ContributeFragment">
+
+
+    <Button
+            android:text="@string/ChoosePictures"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="18dp"
-            android:text="Contribute"/>
-</FrameLayout>
+            android:layout_height="wrap_content"
+            android:id="@+id/btnSelectPictures"/>
+
+    <TextView
+            android:id="@+id/textViewTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Title"
+            android:textSize="25sp">
+    </TextView>
+
+    <EditText
+            android:id="@+id/editTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="title for your pictures"
+            android:inputType="textShortMessage"
+            android:text=""
+    />
+
+
+
+    <TextView
+            android:id="@+id/textViewLon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/longtitude"
+            android:textSize="25sp">
+    </TextView>
+
+
+    <EditText
+            android:id="@+id/editLon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="longtitude"
+            android:inputType="textShortMessage" />
+
+    <TextView
+            android:id="@+id/textViewLat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/latitude"
+            android:textSize="25sp">
+    </TextView>
+
+    <EditText
+            android:id="@+id/editLat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="latitude"
+            android:inputType="textShortMessage" />
+
+    <TextView
+            android:id="@+id/textViewDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Description"
+            android:textSize="25sp">
+    </TextView>
+
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/editDescription"
+            android:lines="6"
+            android:inputType="textMultiLine"
+            android:autofillHints="describe your place"/>
+
+    <Button
+        android:id="@+id/btnStorePictures"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="@string/upload_pictures"
+    />
+</LinearLayout>

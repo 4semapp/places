@@ -2,7 +2,6 @@ package com.tvestergaard.places
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
@@ -17,6 +16,7 @@ import com.tvestergaard.places.pages.AuthenticationActivity.Companion.authentica
 import com.tvestergaard.places.pages.HomeFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.info
 import org.jetbrains.anko.toast
 import pyxis.uzuki.live.richutilskt.utils.put
 import java.lang.RuntimeException
@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
 
     private var currentNavigationFragment = DEFAULT_FRAGMENT
     private var account: GoogleSignInAccount? = null
+    private var currentFragment: Fragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,11 +43,20 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
             show(currentNavigationFragment)
         else
             promptAuthentication()
+
+        if (savedInstanceState != null) {
+            var fragContent = supportFragmentManager.getFragment(savedInstanceState, "currentFragment")
+            info("-----")
+            info(fragContent)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         outState!!.put(CURRENT_NAVIGATION_BUNDLE_KEY, currentNavigationFragment)
+
+        supportFragmentManager.putFragment(outState, "currentFragment", currentFragment!!)
+
     }
 
     /**
@@ -125,6 +135,9 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
                 R.anim.slide_in_right,
                 R.anim.slide_out_right
             )
+
+
+        currentFragment = fragment
 
         transaction
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).replace(R.id.fragmentContainer, fragment)

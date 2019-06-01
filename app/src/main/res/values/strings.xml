@@ -8,4 +8,20 @@
     <string name="authenticationError">You could not be authenticated.</string>
     <string name="pictureTakenSucess">The picture was successfully saved.</string>
     <string name="takePicture">Take Picture</string>
+    <string name="title_item_list">Items</string>
+    <string name="title_item_detail">Item Detail</string>
+    <string name="submit">submit</string>
+    <string name="hello_from_me">test1</string>
+    <string name="upload">upload</string>
+    <string name="Button">Button</string>
+    <string name="titlepicture">Title</string>
+    <string name="describeYourLocation">describe</string>
+    <string name="title"/>
+    <string name="ChoosePictures">ChoosePictures</string>
+    <string name="Description">description</string>
+    <string name="Title">title</string>
+    <string name="Longtitude">longtitude</string>
+    <string name="longtitude">longittude</string>
+    <string name="latitude">latitude</string>
+    <string name="upload_pictures">uploadPictures</string>
 </resources>

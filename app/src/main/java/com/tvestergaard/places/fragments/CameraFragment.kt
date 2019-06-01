@@ -99,7 +99,6 @@ class CameraFragment : Fragment(), AnkoLogger {
     }
 
     private fun loadStoredImages() {
-
         parent
             .supportFragmentManager.beginTransaction()
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)

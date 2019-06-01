@@ -12,21 +12,22 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import com.tvestergaard.places.R
 import kotlinx.android.synthetic.main.fragment_image.view.*
-import org.jetbrains.anko.noButton
+import org.jetbrains.anko.*
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
-import org.jetbrains.anko.yesButton
 import java.io.File
 import java.io.IOException
 
 
-class GalleryFragment : Fragment(), GalleryAdapterListener {
+class GalleryFragment : Fragment(), GalleryAdapterListener{
 
 
     private var imageDirectory: File? = null
     private var columnCount = 2
     private lateinit var adapter: GalleryAdapter
     private val images: MutableList<Image> = ArrayList()
+    private var selectMode: Boolean = false
+    val selected = mutableListOf<Image>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -51,7 +52,7 @@ class GalleryFragment : Fragment(), GalleryAdapterListener {
     /**
      * Returns the thumbnails within the provided directory.
      */
-    private fun readThumbnails(directory: File): List<File> {
+    fun readThumbnails(directory: File): List<File> {
         if (!directory.exists() || !directory.isDirectory)
             return ArrayList(0)
 
@@ -62,12 +63,16 @@ class GalleryFragment : Fragment(), GalleryAdapterListener {
      * Adds a new image to the gallery on screen.
      */
     fun addImage(image: File) {
-        this.images.add(Image(image))
+        this.images.add(Image(image, false))
         this.adapter.notifyDataSetChanged()
     }
 
     override fun onClick(item: Image) {
-        // throw UnsupportedOperationException("not supported")
+        if (item.selected) {
+            selected.remove(item)
+        } else {
+            selected.add(item)
+        }
     }
 
     override fun onLongClick(item: Image) {
@@ -87,37 +92,27 @@ class GalleryFragment : Fragment(), GalleryAdapterListener {
         }.show()
     }
 
-    data class Image(val file: File) {
-        override fun equals(other: Any?): Boolean {
-            if (other !is Image)
-                return false
-
-            return other.file.absolutePath == file.absolutePath
-        }
-
-        override fun toString(): String = file.absolutePath
-        override fun hashCode(): Int = file.hashCode()
-    }
-
     companion object {
-        fun create(imageDirectory: File? = null): GalleryFragment {
+        fun create(imageDirectory: File? = null, selectMode: Boolean = false): GalleryFragment {
             val fragment = GalleryFragment()
             fragment.imageDirectory = imageDirectory
+            fragment.selectMode = selectMode
             return fragment
         }
     }
 }
 
 interface GalleryAdapterListener {
-    fun onClick(item: GalleryFragment.Image)
-    fun onLongClick(item: GalleryFragment.Image)
+    fun onClick(item: Image)
+    fun onLongClick(item: Image)
 }
 
-private class GalleryAdapter(
-    private val images: List<GalleryFragment.Image>,
+private class GalleryAdapter (
+    private val images: List<Image>,
     private val listener: GalleryAdapterListener?
 ) :
-    RecyclerView.Adapter<GalleryAdapter.ViewHolder>() {
+    RecyclerView.Adapter<GalleryAdapter.ViewHolder>(), AnkoLogger {
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -135,15 +130,27 @@ private class GalleryAdapter(
             tag = images[position]
 
             setOnClickListener { v ->
-                val item = v.tag as GalleryFragment.Image
+                val item = v.tag as Image
                 listener?.onClick(item)
+                if (item.selected) {
+                    item.selected = false
+                    holder.imageView.alpha = 1.0f
+                } else {
+                    item.selected = true
+                    //holder.imageView.background = resources.getDrawable(R.drawable.back, null)
+                    //ResourcesCompat.getDrawable(resources, R.drawable.back, null)
+                    // ImageViewCompat.setImageTintList(this.image, ColorStateList.valueOf(Color.RED))
+                    holder.imageView.alpha = 0.5f
+                }
             }
 
             setOnLongClickListener { v ->
-                val item = v.tag as GalleryFragment.Image
+                val item = v.tag as Image
                 listener?.onLongClick(item)
                 true
             }
+
+
         }
     }
 
