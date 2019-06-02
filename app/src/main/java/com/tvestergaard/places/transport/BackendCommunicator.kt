@@ -34,6 +34,6 @@ class BackendCommunicator {
     private fun ok(code: Int) = code in 200..299
 
     companion object {
-        private const val ROOT = " http://cb811550.ngrok.io";
+        private const val ROOT = "http://b4a6c734.ngrok.io";
     }
 }
