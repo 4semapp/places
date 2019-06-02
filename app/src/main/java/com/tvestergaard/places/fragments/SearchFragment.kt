@@ -1,8 +1,14 @@
 package com.tvestergaard.places.fragments
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.RecyclerView.ViewHolder
+import android.text.Layout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,11 +19,14 @@ import kotlinx.android.synthetic.main.fragment_search.*
 import android.widget.BaseAdapter
 import android.widget.TextView
 import com.tvestergaard.places.transport.InSearchResult
+import kotlinx.android.synthetic.main.fragment_search_thumb_detail.view.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.image
 import org.jetbrains.anko.info
 import org.jetbrains.anko.support.v4.toast
 import pyxis.uzuki.live.richutilskt.utils.inflate
+import pyxis.uzuki.live.richutilskt.utils.runOnUiThread
 
 
 class SearchFragment : Fragment(), AnkoLogger {
@@ -52,20 +61,57 @@ class SearchFragment : Fragment(), AnkoLogger {
             doAsync {
                 inSearchResults = backendCommunicator.search(searchTitle)
                 if (inSearchResults != null) {
-                    inSearchResults?.forEach {
-                        info("---")
-                        info(it)
+
+                    runOnUiThread {
+                        thumbNailList.layoutManager = LinearLayoutManager(parent)
+                        thumbNailList.layoutManager = GridLayoutManager(parent, 2)
+                        thumbNailList.adapter = ThumbnailAdapter(inSearchResults!!, activity)
+                        inSearchResults?.forEach {
+                            info("---")
+                            info(it)
+                        }
                     }
+
                 }
             }
-            toast("SKAL DU HA TOOOOAST")
-
         }
+    }
+
+    class ThumbnailAdapter(val items: List<InSearchResult>, val context: Context) : RecyclerView.Adapter<ViewHolder>() {
+
+
+        override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
+            return ViewHolder(
+                LayoutInflater.from(context).inflate(
+                    R.layout.fragment_search_thumb_detail,
+                    parent,
+                    false
+                )
+            )
+        }
+
+        override fun getItemCount(): Int {
+            return items.size
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
+            holder?.thumbDetail?.text = items.get(position).description
+            //holder?.thumbPic?.image = items.get(position).pictures.get(position)
+            //add image here
+        }
+    }
+
+
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        // Holds the TextView that will add each animal to
+        val thumbDetail = view.thumbDetail
+        val thumbPic = view.thumbPic
     }
 
 
     class SearchResultAdapter(private val context: Context, val resultIns: Array<InSearchResult>) : BaseAdapter() {
 
+        @SuppressLint("ViewHolder")
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
             val view = context.inflate(R.layout.search_item, null)
             view.findViewById<TextView>(R.id.searchResultTitle).text = resultIns[position].title
@@ -84,7 +130,6 @@ class SearchFragment : Fragment(), AnkoLogger {
             return resultIns.size;
         }
     }
-
 
 
     override fun onAttach(context: Context) {

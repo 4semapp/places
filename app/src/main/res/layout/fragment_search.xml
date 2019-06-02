@@ -29,4 +29,15 @@
             android:hint="@string/search_pictures"
     />
 
+    <android.support.v7.widget.RecyclerView
+            android:id="@+id/thumbNailList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:padding="20dp"
+
+    >
+
+    </android.support.v7.widget.RecyclerView>
+
 </LinearLayout>

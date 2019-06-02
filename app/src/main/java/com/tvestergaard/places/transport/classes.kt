@@ -29,3 +29,4 @@ data class InThumbPicture(
 data class InFullPicture(
     var fullData: String?
 )
+
