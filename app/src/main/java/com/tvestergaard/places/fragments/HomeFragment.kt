@@ -1,4 +1,4 @@
-package com.tvestergaard.places.pages
+package com.tvestergaard.places.fragments
 
 import android.content.Context
 import android.os.Bundle

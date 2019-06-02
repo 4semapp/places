@@ -10,17 +10,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.tvestergaard.places.fragments.CameraFragment
 import com.tvestergaard.places.fragments.ContributeFragment
 import com.tvestergaard.places.fragments.SearchFragment
-import com.tvestergaard.places.pages.AuthenticatedUser
-import com.tvestergaard.places.pages.AuthenticationActivity
-import com.tvestergaard.places.pages.AuthenticationActivity.Companion.authenticationRequestCode
-import com.tvestergaard.places.pages.HomeFragment
+import com.tvestergaard.places.AuthenticationActivity.Companion.authenticationRequestCode
+import com.tvestergaard.places.fragments.HomeFragment
 import com.tvestergaard.places.transport.BackendCommunicator
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.info
 import org.jetbrains.anko.toast
-import pyxis.uzuki.live.richutilskt.utils.put
 import java.lang.RuntimeException
 
 
@@ -61,7 +57,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        outState!!.put(CURRENT_NAVIGATION_BUNDLE_KEY, currentNavigationFragment)
+        outState!!.putSerializable(CURRENT_NAVIGATION_BUNDLE_KEY, currentNavigationFragment)
 
         if (currentFragment != null) {
             supportFragmentManager.putFragment(outState, "currentFragment", currentFragment!!)

@@ -19,7 +19,6 @@ import com.tvestergaard.places.SearchDetailActivity
 import com.tvestergaard.places.transport.InSearchResult
 import kotlinx.android.synthetic.main.fragment_search_result_master_item.view.*
 import org.jetbrains.anko.*
-import pyxis.uzuki.live.richutilskt.utils.runOnUiThread
 
 
 class SearchFragment : Fragment(), AnkoLogger {
@@ -46,7 +45,7 @@ class SearchFragment : Fragment(), AnkoLogger {
                 inSearchResults = backendCommunicator.search(searchTitle)
                 if (inSearchResults != null) {
 
-                    runOnUiThread {
+                     {
                         thumbNailList.layoutManager = LinearLayoutManager(parent)
                         thumbNailList.layoutManager = GridLayoutManager(parent, 2)
                         thumbNailList.adapter = ThumbnailAdapter(inSearchResults!!, activity)

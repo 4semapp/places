@@ -7,20 +7,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.SupportMapFragment
 import com.tvestergaard.places.transport.BackendCommunicator
-import com.tvestergaard.places.transport.InPicture
 import com.tvestergaard.places.transport.InSearchResult
 
 import kotlinx.android.synthetic.main.activity_search_detail.*
-import kotlinx.android.synthetic.main.activity_search_detail.view.*
-import kotlinx.android.synthetic.main.activity_search_detail_picture.*
 import kotlinx.android.synthetic.main.activity_search_detail_picture.view.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
@@ -44,7 +39,8 @@ class SearchDetailActivity : AppCompatActivity() {
 
     }
 
-    class FullPictureAdapter(val item: InSearchResult, val context: Context) : RecyclerView.Adapter<ViewHolder>(), AnkoLogger {
+    class FullPictureAdapter(val item: InSearchResult, val context: Context) : RecyclerView.Adapter<ViewHolder>(),
+        AnkoLogger {
 
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
             return ViewHolder(

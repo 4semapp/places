@@ -19,6 +19,7 @@ import android.view.ViewGroup
 import com.google.gson.GsonBuilder
 import com.tvestergaard.places.R
 import com.tvestergaard.places.SelectPictureActivity
+import com.tvestergaard.places.runOnUiThread
 import com.tvestergaard.places.transport.BackendCommunicator
 import com.tvestergaard.places.transport.OutPicture
 import com.tvestergaard.places.transport.OutPlace
@@ -27,7 +28,6 @@ import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.info
 import org.jetbrains.anko.support.v4.toast
-import pyxis.uzuki.live.richutilskt.utils.runOnUiThread
 import java.io.File
 
 val gson = GsonBuilder().create()

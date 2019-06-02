@@ -1,7 +1,7 @@
 package com.tvestergaard.places.transport
 
 import com.google.gson.GsonBuilder
-import com.tvestergaard.places.pages.AuthenticatedUser
+import com.tvestergaard.places.AuthenticatedUser
 import khttp.get
 import khttp.post
 
@@ -33,8 +33,12 @@ class BackendCommunicator {
     private fun ok(code: Int) = code in 200..299
 
     fun postPlace(OutPlace: OutPlace): OutPlace? {
-        val response = post("$ROOT/places", data = com.tvestergaard.places.fragments.gson.toJson(OutPlace), headers = mapOf("Content-Type" to "application/json",
-                                                                                                    "Authorization" to "Bearer " + authenticatedUser!!.token))
+        val response = post(
+            "$ROOT/places", data = com.tvestergaard.places.fragments.gson.toJson(OutPlace), headers = mapOf(
+                "Content-Type" to "application/json",
+                "Authorization" to "Bearer " + authenticatedUser!!.token
+            )
+        )
         if (!ok(response.statusCode))
             return null
         return gson.fromJson(response.text, OutPlace::class.java)

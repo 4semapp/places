@@ -8,9 +8,7 @@ import android.support.v4.app.FragmentTransaction
 import com.tvestergaard.places.fragments.CameraFragment
 import com.tvestergaard.places.fragments.GalleryFragment
 import kotlinx.android.synthetic.main.activity_select_picture.*
-import kotlinx.android.synthetic.main.fragment_contribute.*
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.info
 import org.jetbrains.anko.toast
 import java.io.File
 

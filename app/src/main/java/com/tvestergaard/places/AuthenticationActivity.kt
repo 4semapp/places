@@ -1,4 +1,4 @@
-package com.tvestergaard.places.pages
+package com.tvestergaard.places
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -12,7 +12,6 @@ import com.google.android.gms.tasks.Task
 import android.content.Intent
 import com.google.android.gms.common.api.ApiException
 import com.google.gson.GsonBuilder
-import com.tvestergaard.places.R
 import com.tvestergaard.places.transport.BackendCommunicator
 import org.jetbrains.anko.*
 import java.io.Serializable
