@@ -20,11 +20,9 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.tvestergaard.places.transport.InSearchResult
+import kotlinx.android.synthetic.main.fragment_search_thumb_detail.*
 import kotlinx.android.synthetic.main.fragment_search_thumb_detail.view.*
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.image
-import org.jetbrains.anko.info
+import org.jetbrains.anko.*
 import org.jetbrains.anko.support.v4.toast
 import pyxis.uzuki.live.richutilskt.utils.inflate
 import pyxis.uzuki.live.richutilskt.utils.runOnUiThread
@@ -69,14 +67,16 @@ class SearchFragment : Fragment(), AnkoLogger {
                         thumbNailList.adapter = ThumbnailAdapter(inSearchResults!!, activity)
 
                         inSearchResults?.forEach {
-                            info("---")
-                            info(it)
                         }
                     }
 
                 }
             }
         }
+
+
+
+
     }
 
     class ThumbnailAdapter(val items: List<InSearchResult>, val context: Context) : RecyclerView.Adapter<ViewHolder>() {
@@ -102,6 +102,10 @@ class SearchFragment : Fragment(), AnkoLogger {
             //add image here
             Glide.with(context).load("${BackendCommunicator.IMG_ROOT}/${items.get(position).pictures.get(position).thumbName}").into(holder?.thumbPic)
             holder?.personName?.text = items.get(position).user.name
+
+            holder?.container?.setOnClickListener {
+                context.toast("You have clicked.. FUCKING RETARD")
+            }
         }
     }
 
@@ -111,6 +115,8 @@ class SearchFragment : Fragment(), AnkoLogger {
         val thumbDetail = view.thumbDetail
         val thumbPic = view.thumbPic
         val personName = view.personName
+
+        val container = view
     }
 
 

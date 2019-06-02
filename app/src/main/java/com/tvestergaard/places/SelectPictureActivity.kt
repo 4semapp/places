@@ -36,8 +36,6 @@ class SelectPictureActivity : AppCompatActivity(), AnkoLogger {
             if (gallery.selected.size > 0) {
                 val intent = Intent()
                 intent.putExtra("selected", gallery.selected.toTypedArray())
-                info("-------------")
-                info(gallery.selected)
                 setResult(2, intent)
                 finish()
             } else {
