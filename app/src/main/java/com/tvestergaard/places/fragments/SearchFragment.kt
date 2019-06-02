@@ -11,8 +11,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.SearchView
 import android.widget.TextView
-import com.tvestergaard.places.R
 import com.tvestergaard.places.transport.BackendCommunicator
 import kotlinx.android.synthetic.main.fragment_search.*
 import com.tvestergaard.places.SearchDetailActivity
@@ -21,6 +21,7 @@ import com.tvestergaard.places.runOnUiThread
 import com.tvestergaard.places.transport.InSearchResult
 import kotlinx.android.synthetic.main.fragment_search_master_item.view.*
 import org.jetbrains.anko.*
+import com.tvestergaard.places.R.*
 
 
 class SearchFragment : Fragment(), AnkoLogger {
@@ -30,7 +31,7 @@ class SearchFragment : Fragment(), AnkoLogger {
     private lateinit var adapter: SearchResultsAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-        inflater.inflate(R.layout.fragment_search, container, false)
+        inflater.inflate(layout.fragment_search, container, false)
 
     override fun onStart() {
         super.onStart()
@@ -39,14 +40,28 @@ class SearchFragment : Fragment(), AnkoLogger {
         searchResults.layoutManager = LinearLayoutManager(activity)
         searchResults.adapter = adapter
 
-        searchButton.setOnClickListener {
-            val search = searchInput.text.toString()
-            doAsync {
-                results.clear()
-                results.addAll(backendCommunicator.search(search))
-                runOnUiThread {
-                    adapter.notifyDataSetChanged()
-                }
+        searchInput.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(search: String?): Boolean {
+                this@SearchFragment.searchFor(search ?: "")
+                return true
+            }
+
+            override fun onQueryTextChange(p0: String?) = true
+        })
+
+    }
+
+    private fun searchFor(search: String) {
+        doAsync {
+            results.clear()
+            results.addAll(backendCommunicator.search(search))
+            runOnUiThread {
+                adapter.notifyDataSetChanged()
+
+                // collapse the SearchView keyboard
+                searchInput.clearFocus()
+                searchInput.onActionViewCollapsed()
+                screen.requestFocus()
             }
         }
     }
@@ -56,7 +71,7 @@ class SearchFragment : Fragment(), AnkoLogger {
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
             return ViewHolder(
                 LayoutInflater.from(context).inflate(
-                    R.layout.fragment_search_master_item,
+                    layout.fragment_search_master_item,
                     parent,
                     false
                 )

@@ -26,7 +26,7 @@
 
     <!-- Search -->
     <string name="search_input_placeholder">Search by title</string>
-    <string name="search_button_text">Search</string>
+    <!--<string name="search_button_text">Search</string>-->
 
     <!-- Debug -->
     <string name="title_item_list">Items</string>
