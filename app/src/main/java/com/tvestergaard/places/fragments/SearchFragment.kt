@@ -1,14 +1,11 @@
 package com.tvestergaard.places.fragments
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.RecyclerView.ViewHolder
-import android.text.Layout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,15 +13,10 @@ import com.tvestergaard.places.MainActivity
 import com.tvestergaard.places.R
 import com.tvestergaard.places.transport.BackendCommunicator
 import kotlinx.android.synthetic.main.fragment_search.*
-import android.widget.BaseAdapter
-import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.tvestergaard.places.transport.InSearchResult
-import kotlinx.android.synthetic.main.fragment_search_thumb_detail.*
-import kotlinx.android.synthetic.main.fragment_search_thumb_detail.view.*
+import kotlinx.android.synthetic.main.fragment_search_result_master_item.view.*
 import org.jetbrains.anko.*
-import org.jetbrains.anko.support.v4.toast
-import pyxis.uzuki.live.richutilskt.utils.inflate
 import pyxis.uzuki.live.richutilskt.utils.runOnUiThread
 
 
@@ -85,7 +77,7 @@ class SearchFragment : Fragment(), AnkoLogger {
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
             return ViewHolder(
                 LayoutInflater.from(context).inflate(
-                    R.layout.fragment_search_thumb_detail,
+                    R.layout.fragment_search_result_master_item,
                     parent,
                     false
                 )
@@ -104,6 +96,7 @@ class SearchFragment : Fragment(), AnkoLogger {
             holder?.personName?.text = items.get(position).user.name
 
             holder?.container?.setOnClickListener {
+
                 context.toast("You have clicked.. FUCKING RETARD")
             }
         }
@@ -117,29 +110,6 @@ class SearchFragment : Fragment(), AnkoLogger {
         val personName = view.personName
 
         val container = view
-    }
-
-
-    class SearchResultAdapter(private val context: Context, val resultIns: Array<InSearchResult>) : BaseAdapter() {
-
-        @SuppressLint("ViewHolder")
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-            val view = context.inflate(R.layout.search_item, null)
-            view.findViewById<TextView>(R.id.searchResultTitle).text = resultIns[position].title
-            return view
-        }
-
-        override fun getItem(position: Int): Any {
-            return resultIns[position]
-        }
-
-        override fun getItemId(position: Int): Long {
-            return position.toLong();
-        }
-
-        override fun getCount(): Int {
-            return resultIns.size;
-        }
     }
 
 
