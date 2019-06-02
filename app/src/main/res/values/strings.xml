@@ -17,17 +17,17 @@
     <string name="titlepicture">Title</string>
     <string name="describeYourLocation">describe</string>
     <string name="title"/>
-    <string name="ChoosePictures">ChoosePictures</string>
-    <string name="Description">description</string>
-    <string name="Title">title</string>
-    <string name="Longtitude">longtitude</string>
-    <string name="longtitude">longittude</string>
-    <string name="latitude">latitude</string>
-    <string name="upload_pictures">uploadPictures</string>
+    <string name="contribute_choose_picture_button_text">Choose Pictures</string>
+    <string name="contribute_input_title_label">Title</string>
+    <string name="contribute_input_description_label">Description</string>
+    <string name="contribute_input_longitude_label">Longitude</string>
+    <string name="contribute_input_latitude_label">Latitude</string>
+    <string name="contribute_post_button_text">Post Place</string>
     <string name="search_for_titles_here">search for titles here</string>
     <string name="search_for_pictures_through_titles_here">search_pictures</string>
     <string name="search_pictures">search for pictures with their titles</string>
     <string name="searchpictures">search pictures</string>
     <string name="a_picture">a picture</string>
     <string name="title_activity_master_detail">MasterDetail</string>
+    <string name="contribute_header">Create Place</string>
 </resources>

@@ -4,86 +4,86 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
-              tools:context=".fragments.ContributeFragment">
-
-
-    <Button
-            android:text="@string/ChoosePictures"
-            android:layout_width="match_parent"
+              tools:context=".fragments.ContributeFragment"
+              android:padding="18dp">
+    <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/btnSelectPictures"/>
-
+            android:text="@string/contribute_header"
+            android:textSize="40sp"
+            android:layout_marginBottom="25dp">
+    </TextView>
     <TextView
             android:id="@+id/textViewTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/Title"
-            android:textSize="25sp">
+            android:text="@string/contribute_input_title_label"
+            android:textSize="18sp">
     </TextView>
-
     <EditText
-            android:id="@+id/editTitle"
+            android:id="@+id/titleInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:autofillHints="title for your pictures"
             android:inputType="textShortMessage"
             android:text=""
+            android:layout_marginBottom="10dp"
     />
-
-
-
     <TextView
-            android:id="@+id/textViewLon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/longtitude"
-            android:textSize="25sp">
+            android:text="@string/contribute_input_longitude_label"
+            android:textSize="18sp">
     </TextView>
-
-
     <EditText
-            android:id="@+id/editLon"
+            android:id="@+id/longitudeInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:autofillHints="longtitude"
-            android:inputType="textShortMessage" />
-
+            android:inputType="textShortMessage"
+            android:layout_marginBottom="10dp"/>
     <TextView
-            android:id="@+id/textViewLat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/latitude"
-            android:textSize="25sp">
+            android:text="@string/contribute_input_latitude_label"
+            android:textSize="18sp">
     </TextView>
-
     <EditText
-            android:id="@+id/editLat"
+            android:id="@+id/latitudeInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autofillHints="latitude"
-            android:inputType="textShortMessage" />
-
+            android:inputType="textShortMessage"
+            android:layout_marginBottom="10dp"/>
     <TextView
-            android:id="@+id/textViewDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/Description"
-            android:textSize="25sp">
+            android:text="@string/contribute_input_description_label"
+            android:textSize="18sp">
     </TextView>
-
     <EditText
+            android:id="@+id/descriptionInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/editDescription"
             android:lines="6"
-            android:inputType="textMultiLine"
-            android:autofillHints="describe your place"/>
-
+            android:inputType="textMultiLine"/>
     <Button
-        android:id="@+id/btnStorePictures"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:text="@string/upload_pictures"
+            android:id="@+id/choosePicturesButton"
+            android:text="@string/contribute_choose_picture_button_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:textColor="#fff"
+            android:layout_marginTop="15dp"
+            android:padding="20dp"/>
+    <Button
+            android:id="@+id/submitPlaceButton"
+            android:background="@color/colorPrimary"
+            android:textColor="#fff"
+            android:padding="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="58sp"
+            android:layout_alignParentBottom="true"
+            android:text="@string/contribute_post_button_text"
     />
 </LinearLayout>

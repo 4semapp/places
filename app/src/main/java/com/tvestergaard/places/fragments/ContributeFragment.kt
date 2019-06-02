@@ -10,12 +10,13 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat.checkSelfPermission
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.gson.GsonBuilder
-import com.tvestergaard.places.MainActivity
 import com.tvestergaard.places.R
 import com.tvestergaard.places.SelectPictureActivity
 import com.tvestergaard.places.transport.BackendCommunicator
@@ -33,13 +34,21 @@ val gson = GsonBuilder().create()
 
 class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationListener {
 
-    private lateinit var parent: MainActivity
-    private var numberOfUpdates = 0
     private var currentLocation: Location? = null
     private lateinit var locationManager: LocationManager
     private val permissionRequestCode = 0
     private var hasPermissions = false
     private var images = arrayOf<Image>()
+
+    // used to lock the manualLocation property
+    // when true the manualLocation value will not be set to true, when the user edits the longitude or latitude
+    // used to differentiate between the user editing inputs and the input values being set programmatically
+    private var manualLocationLock = false
+
+    // when false, the user is provided their current location
+    // within the longitude and latitude inputs
+    // set to true when the user edits the longitude or latitude inputs
+    private var manualLocation = false
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -49,109 +58,107 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        locationManager = parent.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10 * 1000, 10.0f, this)
+        checkPermissions()
     }
 
     override fun onStart() {
         super.onStart()
-        btnSelectPictures.setOnClickListener {
-            var intent = Intent(parent, SelectPictureActivity::class.java)
+
+        choosePicturesButton.setOnClickListener {
+            var intent = Intent(activity, SelectPictureActivity::class.java)
             startActivityForResult(intent, selectPictureRequestCode)
         }
-        btnStorePictures.isEnabled = images.size > 0
-        btnStorePictures.setOnClickListener {
-            toast("You have clicked a buttoN!")
 
-            info(images)
-            images[0].file
-            val base64Images = images.map { img ->
-                val thumb = img.file
-                val full = File(thumb.parent, thumb.name.removePrefix("thumb_"))
+        submitPlaceButton.isEnabled = images.isNotEmpty()
+        submitPlaceButton.setOnClickListener { submitPlace() }
+        latitudeInput.addTextChangedListener(Watcher())
+        longitudeInput.addTextChangedListener(Watcher())
+    }
 
-                val thumbBase64 = Base64.encodeToString(thumb.inputStream().readBytes(), Base64.DEFAULT)
-                val fullBase64 = Base64.encodeToString(full.inputStream().readBytes(), Base64.DEFAULT)
-                OutPicture(fullData = fullBase64, thumbData = thumbBase64)
+    private inner class Watcher : TextWatcher, AnkoLogger {
 
-            }
-            val inPlace = OutPlace(
-                editTitle.text.toString(),
-                editDescription.text.toString(),
-                lat = editLat.text.toString().toFloat(),
-                lon = editLon.text.toString().toFloat(),
-                pictures = base64Images.toTypedArray()
+        override fun afterTextChanged(s: Editable?) {}
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            if (!manualLocationLock)
+                this@ContributeFragment.manualLocation = true
+        }
+    }
+
+    private fun submitPlace() {
+
+        val base64Images = images.map { img ->
+            val thumbnailFile = img.file
+            val fullFile = getFullFile(thumbnailFile)
+            OutPicture(
+                fullData = readBase64(fullFile),
+                thumbData = readBase64(thumbnailFile)
             )
+        }
 
-            doAsync {
-                val response = BackendCommunicator().postPlace(inPlace)
-                runOnUiThread {
-                    if (response == null) {
-                        toast("You could not be authenticated.")
-                    }
-                }
+        val toCreate = OutPlace(
+            title = titleInput.text.toString(),
+            description = descriptionInput.text.toString(),
+            lat = latitudeInput.text.toString().toFloat(),
+            lon = longitudeInput.text.toString().toFloat(),
+            pictures = base64Images.toTypedArray()
+        )
+
+        doAsync {
+            val response = BackendCommunicator().postPlace(toCreate)
+            runOnUiThread {
+                if (response == null)
+                    toast("The place could not be created.")
+                else
+                    toast("The place was successfully created.")
             }
-
         }
     }
 
+    private fun getFullFile(thumbnailFile: File) =
+        File(thumbnailFile.parent, thumbnailFile.name.removePrefix("thumb_"))
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is MainActivity) {
-            parent = context
-        }
-    }
+    private fun readBase64(imageFile: File) =
+        Base64.encodeToString(imageFile.inputStream().readBytes(), Base64.DEFAULT)
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
+    @SuppressLint("MissingPermission")
+    private fun startLocationListener() {
+        locationManager = activity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10 * 1000, 10.0f, this)
+        currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
     }
 
     override fun onLocationChanged(location: Location?) {
-        if (location != null) {
-            currentLocation = location
-            numberOfUpdates++
-            //updateDisplay(location)
+        if (location != null && !manualLocation) {
+            manualLocationLock = true
+            longitudeInput.setText(location.longitude.toString())
+            latitudeInput.setText(location.latitude.toString())
+            manualLocationLock = false
         }
     }
 
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
     }
 
     override fun onProviderEnabled(provider: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
     }
 
     override fun onProviderDisabled(provider: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        if (savedInstanceState != null) {
-
-        }
 
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            selectPictureRequestCode -> {
-                if (data != null) {
-                    images = data!!.extras["selected"] as Array<Image>
-                }
-            }
+            selectPictureRequestCode ->
+                if (data != null)
+                    images = data.extras["selected"] as Array<Image>
         }
-        updateLocation()
-        if (images.size > 0) {
-            //call endpoint here
-            btnSelectPictures.isEnabled = true
-        } else {
-            btnStorePictures.isEnabled = false
-        }
+
+        submitPlaceButton.isEnabled = images.isNotEmpty()
     }
 
     companion object {
@@ -170,10 +177,11 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
      * Updates the hasPermissions field. Requests permission from the user.
      */
     private fun checkPermissions() {
-        if (checkSelfPermission(parent, ACCESS_FINE_LOCATION) != PERMISSION_GRANTED) {
+        if (checkSelfPermission(activity, ACCESS_FINE_LOCATION) != PERMISSION_GRANTED) {
             requestPermissions(arrayOf(ACCESS_FINE_LOCATION), permissionRequestCode)
         } else {
             hasPermissions = true
+            startLocationListener()
         }
     }
 
@@ -182,43 +190,15 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
             permissionRequestCode -> { // ACCESS_FINE_LOCATION
                 this.hasPermissions = grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED
                 if (this.hasPermissions)
-                    updateLocation()
+                    startLocationListener()
                 else
-                    toast("You must grant location permissions for the application to work.")
+                    toast("You must grant location permissions for the automatic location finder.")
             }
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private fun updateLocation() {
-
-        if (!this.hasPermissions) {
-            checkPermissions()
-            return
-        }
-
-        val location: Location? = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-        if (location == null) {
-            toast("Could not retrieve the last known location.")
-        } else {
-
-            editTitle.setText("Test1")
-            editDescription.setText("desc1")
-            editLon.setText(location.longitude.toString())
-            editLat.setText(location.latitude.toString())
-        }
+    override fun onDestroy() {
+        locationManager.removeUpdates(this)
+        super.onDestroy()
     }
-
-    //not used
-    /*
-    private fun updateDisplay(location: Location?) {
-        if (location != null) {
-            editTitle.setText("Test1")
-            editDescription.setText("desc1")
-            editLon.setText(location.longitude.toString())
-            editLat.setText(location.latitude.toString())
-        }
-    }*/
-
-
 }
