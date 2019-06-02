@@ -1,25 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<tools:LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" xmlns:tools="http://schemas.android.com/tools"
                     android:orientation="vertical"
-                    tools:context=".SelectPictureActivity">
-    <Button
-            android:id="@+id/btnFinishedSelection"
-            android:background="@color/colorPrimary"
-            android:textColor="#fff"
-            android:text="@string/upload"
+                    tools:context=".SearchDetailActivity">
+    <TextView
+            android:id="@+id/titlePlace"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
             android:padding="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:text=""
     />
 
-    <FrameLayout
-            android:id="@+id/galleryFragmentContainer"
-            android:layout_marginStart="0dp"
-            android:layout_height="wrap_content"
+    <TextView
+            android:id="@+id/description"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:padding="20dp"
+            android:text=""
     />
 
 
-</tools:LinearLayout>
+    <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerViewPlace"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <!-- add google maps here-->
+
+    <Button
+            android:id="@+id/btnBack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/back"
+    />
+
+</LinearLayout>

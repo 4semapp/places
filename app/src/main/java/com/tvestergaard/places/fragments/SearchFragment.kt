@@ -1,6 +1,7 @@
 package com.tvestergaard.places.fragments
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
@@ -14,6 +15,7 @@ import com.tvestergaard.places.R
 import com.tvestergaard.places.transport.BackendCommunicator
 import kotlinx.android.synthetic.main.fragment_search.*
 import com.bumptech.glide.Glide
+import com.tvestergaard.places.SearchDetailActivity
 import com.tvestergaard.places.transport.InSearchResult
 import kotlinx.android.synthetic.main.fragment_search_result_master_item.view.*
 import org.jetbrains.anko.*
@@ -31,15 +33,6 @@ class SearchFragment : Fragment(), AnkoLogger {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
-        /*doAsync {
-            val resultIns = communicator.search("")
-            runOnUiThread {
-                searchResults.adapter = SearchResultAdapter(parent!!, resultIns.toTypedArray())
-            }
-        }*/
-
     }
 
     override fun onStart() {
@@ -48,7 +41,7 @@ class SearchFragment : Fragment(), AnkoLogger {
 
         btnSearch.setOnClickListener {
             val searchTitle = searchBar.text.toString()
-            var inSearchResults: List<InSearchResult>? = null //list of places
+            var inSearchResults: List<InSearchResult>? = null
             doAsync {
                 inSearchResults = backendCommunicator.search(searchTitle)
                 if (inSearchResults != null) {
@@ -65,14 +58,9 @@ class SearchFragment : Fragment(), AnkoLogger {
                 }
             }
         }
-
-
-
-
     }
 
     class ThumbnailAdapter(val items: List<InSearchResult>, val context: Context) : RecyclerView.Adapter<ViewHolder>() {
-
 
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
             return ViewHolder(
@@ -90,14 +78,17 @@ class SearchFragment : Fragment(), AnkoLogger {
 
         override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
             holder?.thumbDetail?.text = items.get(position).description
-            //holder?.thumbPic?.image = items.get(position).pictures.get(position)
-            //add image here
-            Glide.with(context).load("${BackendCommunicator.IMG_ROOT}/${items.get(position).pictures.get(position).thumbName}").into(holder?.thumbPic)
+
+            Glide.with(context)
+                .load("${BackendCommunicator.IMG_ROOT}/${items.get(position).pictures.get(position).thumbName}")
+                .into(holder?.thumbPic)
+
             holder?.personName?.text = items.get(position).user.name
 
             holder?.container?.setOnClickListener {
-
-                context.toast("You have clicked.. FUCKING RETARD")
+                val intent = Intent(context, SearchDetailActivity::class.java)
+                intent.putExtra("place", items.get(position))
+                context.startActivity(intent)
             }
         }
     }
