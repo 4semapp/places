@@ -4,14 +4,10 @@
               android:layout_width="match_parent" android:layout_height="match_parent"
               android:orientation="vertical"
               tools:context=".SearchDetailActivity">
-
     <ImageView
             android:id="@+id/fullPicture"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/a_picture"
             android:textSize="20sp"
-            android:padding="20dp"
-    />
-
+            android:padding="20dp"/>
 </LinearLayout>

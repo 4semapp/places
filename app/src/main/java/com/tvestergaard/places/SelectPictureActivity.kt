@@ -30,7 +30,7 @@ class SelectPictureActivity : AppCompatActivity(), AnkoLogger {
     override fun onStart() {
         super.onStart()
         loadStoredImages()
-        btnFinishedSelection.setOnClickListener {
+        completeSelectionButton.setOnClickListener {
             if (gallery.selected.size > 0) {
                 val intent = Intent()
                 intent.putExtra("selected", gallery.selected.toTypedArray())

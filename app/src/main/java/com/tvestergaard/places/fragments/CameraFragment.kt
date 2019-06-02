@@ -69,7 +69,7 @@ class CameraFragment : Fragment(), AnkoLogger {
             loadStoredImages()
         }
 
-        newPictureButton.onClick {
+        newPictureButton.setOnClickListener {
             dispatchTakePictureIntent()
         }
     }
@@ -150,7 +150,7 @@ class CameraFragment : Fragment(), AnkoLogger {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == requestImageCaptureCode && resultCode == RESULT_OK) {
-            toast(string.pictureTakenSucess)
+            toast(string.pictureTakenSuccess)
             if (takenPicture != null) {
                 thumbnail(takenPicture!!)
                 takenPicture = null

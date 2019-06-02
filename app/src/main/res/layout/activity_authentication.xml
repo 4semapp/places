@@ -3,7 +3,7 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context=".pages.AuthenticationActivity" android:padding="10sp">
+                tools:context=".AuthenticationActivity" android:padding="10sp">
     <com.google.android.gms.common.SignInButton
             android:id="@+id/authenticateButton"
             android:layout_width="wrap_content"

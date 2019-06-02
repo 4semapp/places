@@ -45,7 +45,7 @@ class AuthenticationActivity : AppCompatActivity(), AnkoLogger {
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        authenticateButton.onClick {
+        authenticateButton.setOnClickListener {
             val signInIntent = googleSignInClient.signInIntent
             startActivityForResult(signInIntent, authenticationRequestCode)
         }

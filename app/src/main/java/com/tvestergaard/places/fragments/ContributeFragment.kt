@@ -1,6 +1,7 @@
 package com.tvestergaard.places.fragments
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -177,8 +178,10 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
      * Updates the hasPermissions field. Requests permission from the user.
      */
     private fun checkPermissions() {
-        if (checkSelfPermission(activity, ACCESS_FINE_LOCATION) != PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(ACCESS_FINE_LOCATION), permissionRequestCode)
+        if (checkSelfPermission(activity, ACCESS_FINE_LOCATION) != PERMISSION_GRANTED ||
+            checkSelfPermission(activity, READ_EXTERNAL_STORAGE) != PERMISSION_GRANTED
+        ) {
+            requestPermissions(arrayOf(ACCESS_FINE_LOCATION, READ_EXTERNAL_STORAGE), permissionRequestCode)
         } else {
             hasPermissions = true
             startLocationListener()

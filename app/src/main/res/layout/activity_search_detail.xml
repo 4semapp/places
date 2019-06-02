@@ -1,42 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" xmlns:tools="http://schemas.android.com/tools"
-                    android:orientation="vertical"
-                    tools:context=".SearchDetailActivity">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent" android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context=".SearchDetailActivity">
     <TextView
             android:id="@+id/titlePlace"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:padding="20dp"
-            android:text=""
-    />
-
+            android:text=""/>
     <TextView
             android:id="@+id/description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:padding="20dp"
-            android:text=""
-    />
-
-
+            android:text=""/>
     <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewPlace"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
     </android.support.v7.widget.RecyclerView>
-
     <!-- add google maps here-->
-
-    <Button
-            android:id="@+id/btnBack"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/back"
-    />
-
 </LinearLayout>

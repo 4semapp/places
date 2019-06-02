@@ -5,21 +5,16 @@
                     android:orientation="vertical"
                     tools:context=".SelectPictureActivity">
     <Button
-            android:id="@+id/btnFinishedSelection"
+            android:id="@+id/completeSelectionButton"
             android:background="@color/colorPrimary"
             android:textColor="#fff"
-            android:text="@string/upload"
+            android:text="@string/contribute_complete_image_selection_text"
             android:padding="20dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-    />
-
+            android:layout_height="wrap_content"/>
     <FrameLayout
             android:id="@+id/galleryFragmentContainer"
             android:layout_marginStart="0dp"
             android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-    />
-
-
+            android:layout_width="match_parent"/>
 </tools:LinearLayout>

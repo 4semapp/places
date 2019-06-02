@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
                 promptAuthentication()
 
             if (savedInstanceState != null) {
-                var fragContent = supportFragmentManager.getFragment(savedInstanceState, "currentFragment")
+                supportFragmentManager.getFragment(savedInstanceState, "currentFragment")
             }
         }
     }
