@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
                 account = BackendCommunicator().authenticateWithBackend(lastSignIn.idToken)
 
             if (account != null) {
+                BackendCommunicator.authenticatedUser = account
                 show(currentNavigationFragment)
             } else
                 promptAuthentication()

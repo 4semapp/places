@@ -8,25 +8,21 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
-import android.os.Environment
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentTransaction
 import android.support.v4.content.ContextCompat.checkSelfPermission
 import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.android.gms.location.LocationListener
-import com.google.android.gms.location.LocationServices
 import com.google.gson.GsonBuilder
 import com.tvestergaard.places.MainActivity
 import com.tvestergaard.places.R
 import com.tvestergaard.places.SelectPictureActivity
-import khttp.async
-import khttp.post
+import com.tvestergaard.places.transport.BackendCommunicator
+import com.tvestergaard.places.transport.OutPicture
+import com.tvestergaard.places.transport.OutPlace
 import kotlinx.android.synthetic.main.fragment_contribute.*
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.db.DEFAULT
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.info
 import org.jetbrains.anko.support.v4.toast
@@ -63,11 +59,7 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
             var intent = Intent(parent, SelectPictureActivity::class.java)
             startActivityForResult(intent, selectPictureRequestCode)
         }
-        if (images.size > 0) {
-            btnStorePictures.isEnabled = true
-        } else {
-            btnStorePictures.isEnabled = false
-        }
+        btnStorePictures.isEnabled = images.size > 0
         btnStorePictures.setOnClickListener {
             toast("You have clicked a buttoN!")
 
@@ -79,10 +71,10 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
 
                 val thumbBase64 = Base64.encodeToString(thumb.inputStream().readBytes(), Base64.DEFAULT)
                 val fullBase64 = Base64.encodeToString(full.inputStream().readBytes(), Base64.DEFAULT)
-                InPicture(fullData = fullBase64, thumbData = thumbBase64)
+                OutPicture(fullData = fullBase64, thumbData = thumbBase64)
 
             }
-            val inPlace = InPlace(
+            val inPlace = OutPlace(
                 editTitle.text.toString(),
                 editDescription.text.toString(),
                 lat = editLat.text.toString().toFloat(),
@@ -91,9 +83,9 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
             )
 
             doAsync {
-                val response = post("http://cb811550.ngrok.io/places", data = gson.toJson(inPlace), headers = mapOf("Content-Type" to "application/json"))
+                val response = BackendCommunicator().postPlace(inPlace)
                 runOnUiThread {
-                    if (response.statusCode < 200 || response.statusCode > 299) {
+                    if (response == null) {
                         toast("You could not be authenticated.")
                     }
                 }
@@ -102,19 +94,6 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
         }
     }
 
-
-    data class InPicture(
-        var fullData: String,
-        var thumbData: String
-    )
-
-    data class InPlace(
-        var title: String,
-        var description: String,
-        var lat: Float,
-        var lon: Float,
-        var pictures: Array<InPicture>
-    )
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

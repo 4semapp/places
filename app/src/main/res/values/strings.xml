@@ -24,4 +24,8 @@
     <string name="longtitude">longittude</string>
     <string name="latitude">latitude</string>
     <string name="upload_pictures">uploadPictures</string>
+    <string name="search_for_titles_here">search for titles here</string>
+    <string name="search_for_pictures_through_titles_here">search_pictures</string>
+    <string name="search_pictures">search for pictures with their titles</string>
+    <string name="searchpictures">search pictures</string>
 </resources>

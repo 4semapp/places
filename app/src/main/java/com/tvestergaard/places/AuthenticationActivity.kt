@@ -68,6 +68,7 @@ class AuthenticationActivity : AppCompatActivity(), AnkoLogger {
             val result = Intent()
             doAsync {
                 val backendAuthenticationUser = BackendCommunicator().authenticateWithBackend(account?.idToken)
+                BackendCommunicator.authenticatedUser = backendAuthenticationUser
                 runOnUiThread {
                     result.putExtra("account", backendAuthenticationUser)
                     setResult(2, result) // 2 == OK

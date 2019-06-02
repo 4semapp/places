@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context=".fragments.SearchFragment"
-             android:padding="20dp">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              tools:context=".fragments.SearchFragment"
+              android:padding="20dp" android:orientation="vertical">
+
     <ListView
             android:id="@+id/searchResults"
             android:layout_width="match_parent"
@@ -12,4 +13,20 @@
             android:divider="#000"
             android:dividerHeight="2dp"
             android:padding="0dp"/>
-</FrameLayout>
+
+    <Button
+            android:id="@+id/btnSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/searchpictures"
+    />
+
+    <EditText
+            android:id="@+id/searchBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:hint="@string/search_pictures"
+    />
+
+</LinearLayout>

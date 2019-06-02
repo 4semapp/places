@@ -4,7 +4,6 @@ import com.google.gson.GsonBuilder
 import com.tvestergaard.places.pages.AuthenticatedUser
 import khttp.get
 import khttp.post
-import java.net.URL
 
 class BackendCommunicator {
 
@@ -22,18 +21,28 @@ class BackendCommunicator {
         return gson.fromJson(response.text, AuthenticatedUser::class.java)
     }
 
-    fun search(term: String): List<SearchResult> {
+    fun search(term: String): List<InSearchResult> {
         val url = "$ROOT/places/search/$term"
         val response = get(url)
         if (!ok(response.statusCode))
             return listOf()
 
-        return gson.fromJson(response.text, Array<SearchResult>::class.java).toList()
+        return gson.fromJson(response.text, Array<InSearchResult>::class.java).toList()
     }
 
     private fun ok(code: Int) = code in 200..299
 
+    fun postPlace(OutPlace: OutPlace): OutPlace? {
+        val response = post("$ROOT/places", data = com.tvestergaard.places.fragments.gson.toJson(OutPlace), headers = mapOf("Content-Type" to "application/json",
+                                                                                                    "Authorization" to "Bearer " + authenticatedUser!!.token))
+        if (!ok(response.statusCode))
+            return null
+        return gson.fromJson(response.text, OutPlace::class.java)
+
+    }
+
     companion object {
         private const val ROOT = "http://b4a6c734.ngrok.io";
+        var authenticatedUser: AuthenticatedUser? = null
     }
 }
