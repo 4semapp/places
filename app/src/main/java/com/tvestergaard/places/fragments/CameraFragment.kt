@@ -13,23 +13,17 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_camera.*
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.support.v4.toast
-import com.tvestergaard.places.MainActivity
 import java.io.File
 import android.support.v4.app.ActivityCompat
-import android.content.pm.PackageManager.PERMISSION_DENIED
-import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.BitmapFactory
 import android.media.ThumbnailUtils
 import android.os.Environment
 import android.support.v4.app.FragmentTransaction
-import android.support.v4.content.ContextCompat.checkSelfPermission
 import android.support.v4.content.FileProvider
-import com.tvestergaard.places.BuildConfig
-import com.tvestergaard.places.R
 import com.tvestergaard.places.R.*
 import android.graphics.Bitmap
+import com.tvestergaard.places.*
 import java.io.FileOutputStream
 import java.time.Instant
 import java.time.ZoneOffset
@@ -44,7 +38,7 @@ import java.time.format.DateTimeFormatter
 
 class CameraFragment : Fragment(), AnkoLogger {
 
-    private lateinit var parent: MainActivity
+    private var permissions = arrayOf(CAMERA, WRITE_EXTERNAL_STORAGE)
     private var takenPicture: File? = null
     private var mediaStorageDir = File(
         Environment.getExternalStoragePublicDirectory(
@@ -61,9 +55,9 @@ class CameraFragment : Fragment(), AnkoLogger {
     override fun onStart() {
         super.onStart()
 
-        if (!hasPermissions()) {
+        if (!hasPermissions(permissions)) {
             newPictureButton.isEnabled = false
-            ActivityCompat.requestPermissions(parent, arrayOf(CAMERA, WRITE_EXTERNAL_STORAGE), requestPermissionsCode)
+            ActivityCompat.requestPermissions(activity, permissions, requestPermissionsCode)
         } else {
             newPictureButton.isEnabled = true
             loadStoredImages()
@@ -72,14 +66,6 @@ class CameraFragment : Fragment(), AnkoLogger {
         newPictureButton.setOnClickListener {
             dispatchTakePictureIntent()
         }
-    }
-
-    /**
-     * Checks if the application has all necessary permissions.
-     */
-    private fun hasPermissions(): Boolean {
-        return isGranted(checkSelfPermission(parent, CAMERA)) &&
-                isGranted(checkSelfPermission(parent, WRITE_EXTERNAL_STORAGE))
     }
 
     /**
@@ -95,25 +81,13 @@ class CameraFragment : Fragment(), AnkoLogger {
     }
 
     private fun loadStoredImages() {
-        parent
+        activity
             .supportFragmentManager.beginTransaction()
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
             .replace(R.id.galleryFragmentContainer, gallery)
             .commitAllowingStateLoss()
     }
 
-
-    private fun isGranted(code: Int): Boolean {
-        return code == PERMISSION_GRANTED
-    }
-
-    private fun isGranted(codes: IntArray): Boolean {
-        for (code in codes)
-            if (code == PERMISSION_DENIED)
-                return false
-
-        return true
-    }
 
     private fun dispatchTakePictureIntent() {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -146,7 +120,7 @@ class CameraFragment : Fragment(), AnkoLogger {
      * Returns the write-safe uri for the provided file.
      */
     private fun toUri(file: File) =
-        FileProvider.getUriForFile(parent, fileProviderName, file)
+        FileProvider.getUriForFile(activity, fileProviderName, file)
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == requestImageCaptureCode && resultCode == RESULT_OK) {
@@ -166,12 +140,6 @@ class CameraFragment : Fragment(), AnkoLogger {
             outputBitmap.compress(Bitmap.CompressFormat.JPEG, 85, out)
             gallery.addImage(outputFile)
         }
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is MainActivity)
-            parent = context
     }
 
     companion object {

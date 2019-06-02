@@ -11,7 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import com.tvestergaard.places.R
-import kotlinx.android.synthetic.main.fragment_image.view.*
+import kotlinx.android.synthetic.main.fragment_gallery_image.view.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
@@ -31,7 +31,7 @@ class GalleryFragment : Fragment(), GalleryAdapterListener{
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        val view = inflater.inflate(R.layout.fragment_image_list, container, false)
+        val view = inflater.inflate(R.layout.fragment_gallery, container, false)
         if (view is RecyclerView) {
             this.adapter = GalleryAdapter(images, this)
             view.adapter = this.adapter
@@ -52,7 +52,7 @@ class GalleryFragment : Fragment(), GalleryAdapterListener{
     /**
      * Returns the thumbnails within the provided directory.
      */
-    fun readThumbnails(directory: File): List<File> {
+    private fun readThumbnails(directory: File): List<File> {
         if (!directory.exists() || !directory.isDirectory)
             return ArrayList(0)
 
@@ -116,7 +116,7 @@ private class GalleryAdapter (
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.fragment_image, parent, false)
+            .inflate(R.layout.fragment_gallery_image, parent, false)
         return ViewHolder(view)
     }
 

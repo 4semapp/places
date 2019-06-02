@@ -17,4 +17,9 @@
             android:id="@+id/navigation_contribute"
             android:icon="@drawable/ic_add_black_24dp"
             android:title="@string/title_contribute"/>
+    <item
+        android:id="@+id/navigation_profile"
+        android:icon="@drawable/ic_person_outline_black_24dp"
+        android:title="@string/title_profile"
+    />
 </menu>

@@ -7,6 +7,7 @@
     <string name="title_contribute">Contribute</string>
     <string name="title_search">Search</string>
     <string name="title_camera">Camera</string>
+    <string name="title_profile">Profile</string>
     <string name="title_activity_master_detail">MasterDetail</string>
 
     <!-- Camera -->

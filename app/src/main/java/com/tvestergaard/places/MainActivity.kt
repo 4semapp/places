@@ -7,11 +7,8 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
 import android.support.v7.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.tvestergaard.places.fragments.CameraFragment
-import com.tvestergaard.places.fragments.ContributeFragment
-import com.tvestergaard.places.fragments.SearchFragment
 import com.tvestergaard.places.AuthenticationActivity.Companion.authenticationRequestCode
-import com.tvestergaard.places.fragments.HomeFragment
+import com.tvestergaard.places.fragments.*
 import com.tvestergaard.places.transport.BackendCommunicator
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.AnkoLogger
@@ -108,6 +105,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         2 -> CameraFragment.newInstance()
         3 -> SearchFragment.newInstance()
         4 -> ContributeFragment.newInstance()
+        5 -> ProfileFragment.newInstance()
         else -> throw RuntimeException("unhandled fragment type $id.")
     }
 
@@ -125,6 +123,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
             R.id.navigation_camera -> 2
             R.id.navigation_search -> 3
             R.id.navigation_contribute -> 4
+            R.id.navigation_profile -> 5
             else -> DEFAULT_FRAGMENT
         }
     }
