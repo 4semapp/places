@@ -18,6 +18,7 @@ import com.tvestergaard.places.transport.BackendCommunicator
 import kotlinx.android.synthetic.main.fragment_search.*
 import android.widget.BaseAdapter
 import android.widget.TextView
+import com.bumptech.glide.Glide
 import com.tvestergaard.places.transport.InSearchResult
 import kotlinx.android.synthetic.main.fragment_search_thumb_detail.view.*
 import org.jetbrains.anko.AnkoLogger
@@ -66,6 +67,7 @@ class SearchFragment : Fragment(), AnkoLogger {
                         thumbNailList.layoutManager = LinearLayoutManager(parent)
                         thumbNailList.layoutManager = GridLayoutManager(parent, 2)
                         thumbNailList.adapter = ThumbnailAdapter(inSearchResults!!, activity)
+
                         inSearchResults?.forEach {
                             info("---")
                             info(it)
@@ -98,6 +100,8 @@ class SearchFragment : Fragment(), AnkoLogger {
             holder?.thumbDetail?.text = items.get(position).description
             //holder?.thumbPic?.image = items.get(position).pictures.get(position)
             //add image here
+            Glide.with(context).load("${BackendCommunicator.IMG_ROOT}/${items.get(position).pictures.get(position).thumbName}").into(holder?.thumbPic)
+            holder?.personName?.text = items.get(position).user.name
         }
     }
 
@@ -106,6 +110,7 @@ class SearchFragment : Fragment(), AnkoLogger {
         // Holds the TextView that will add each animal to
         val thumbDetail = view.thumbDetail
         val thumbPic = view.thumbPic
+        val personName = view.personName
     }
 
 

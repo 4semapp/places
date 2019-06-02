@@ -6,7 +6,8 @@ data class InSearchResult(
     val description: String,
     val latitude: Float,
     val longitude: Float,
-    val pictures: Array<InThumbPicture>
+    val pictures: Array<InPicture>,
+    var user: InUser
 )
 
 data class OutPlace(
@@ -18,15 +19,17 @@ data class OutPlace(
 )
 
 data class OutPicture(
-    var fullData: String?,
-    var thumbData: String?
+    var fullData: String,
+    var thumbData: String
 )
 
-data class InThumbPicture(
-    var thumbData: String?
+data class InPicture(
+    var thumbName: String,
+    var fullName: String
 )
 
-data class InFullPicture(
-    var fullData: String?
+data class InUser(
+    var id: Int,
+    var name: String
 )
 
