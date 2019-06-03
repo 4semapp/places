@@ -30,7 +30,7 @@ val gson = GsonBuilder().create()
 
 class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationListener {
 
-    private lateinit var locationManager: LocationManager
+    private var locationManager: LocationManager? = null
     private var images = arrayOf<Image>()
     private val permissionRequestCode = 0
     private var requiredPermissions = arrayOf(READ_EXTERNAL_STORAGE, ACCESS_FINE_LOCATION)
@@ -120,8 +120,8 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
     @SuppressLint("MissingPermission")
     private fun startLocationListener() {
         locationManager = activity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10 * 1000, 10.0f, this)
-        val lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+        locationManager!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10 * 1000, 10.0f, this)
+        val lastKnownLocation = locationManager!!.getLastKnownLocation(LocationManager.GPS_PROVIDER)
         if (lastKnownLocation != null)
             updateLocation(lastKnownLocation)
     }
@@ -181,14 +181,12 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
             permissionRequestCode -> {
                 if (isGranted(grantResults))
                     startLocationListener()
-                else
-                    toast("You must grant location requiredPermissions for the automatic location finder.")
             }
         }
     }
 
     override fun onDestroy() {
-        locationManager.removeUpdates(this)
+        locationManager?.removeUpdates(this)
         super.onDestroy()
     }
 }

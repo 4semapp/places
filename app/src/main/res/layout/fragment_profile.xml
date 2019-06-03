@@ -27,7 +27,7 @@
                 android:layout_width="100dp"
                 android:layout_marginEnd="20dp"
                 android:layout_height="wrap_content"
-                android:text="Name"
+                android:text="@string/profile_name_label"
         />
         <TextView
                 android:id="@+id/nameText"
@@ -42,7 +42,7 @@
                 android:layout_width="100dp"
                 android:layout_marginEnd="20dp"
                 android:layout_height="wrap_content"
-                android:text="Location"
+                android:text="@string/profile_location_label"
         />
         <TextView
                 android:id="@+id/localeText"
@@ -57,7 +57,7 @@
                 android:layout_width="100dp"
                 android:layout_marginEnd="20dp"
                 android:layout_height="wrap_content"
-                android:text="Posts"
+                android:text="@string/profile_number_of_posts_label"
         />
         <TextView
                 android:id="@+id/numberOfPostsText"
@@ -65,4 +65,13 @@
                 android:layout_height="wrap_content"
         />
     </LinearLayout>
+    <Button
+            android:id="@+id/signOutButton"
+            android:layout_marginTop="20dp"
+            android:background="@color/colorPrimary"
+            android:textColor="#fff"
+            android:text="@string/profile_sign_out_text"
+            android:padding="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 </LinearLayout>
