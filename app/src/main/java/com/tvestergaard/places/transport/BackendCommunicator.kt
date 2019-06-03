@@ -46,7 +46,7 @@ class BackendCommunicator {
     }
 
     companion object {
-        private const val ROOT = "http://0685187b.ngrok.io"
+        private const val ROOT = "http://6cc77831.ngrok.io"
         var authenticatedUser: AuthenticatedUser? = null
         const val IMG_ROOT = "$ROOT/images"
     }

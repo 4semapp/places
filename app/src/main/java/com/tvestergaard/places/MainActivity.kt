@@ -20,7 +20,7 @@ import java.lang.RuntimeException
 class MainActivity : AppCompatActivity(), AnkoLogger {
 
     private var currentNavigationFragment = DEFAULT_FRAGMENT
-    private var account: AuthenticatedUser? = null
+    var account: AuthenticatedUser? = null
     private var currentFragment: Fragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +37,6 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
             val lastSignIn = GoogleSignIn.getLastSignedInAccount(this@MainActivity)
 
             if (lastSignIn != null)
-
                 account = BackendCommunicator().authenticateWithBackend(lastSignIn.idToken)
 
             if (account != null) {
