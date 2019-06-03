@@ -5,12 +5,10 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat.checkSelfPermission
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Base64
@@ -18,16 +16,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.gson.GsonBuilder
-import com.tvestergaard.places.R
-import com.tvestergaard.places.SelectPictureActivity
-import com.tvestergaard.places.runOnUiThread
+import com.tvestergaard.places.*
 import com.tvestergaard.places.transport.BackendCommunicator
 import com.tvestergaard.places.transport.OutPicture
 import com.tvestergaard.places.transport.OutPlace
 import kotlinx.android.synthetic.main.fragment_contribute.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.info
 import org.jetbrains.anko.support.v4.toast
 import java.io.File
 
@@ -35,11 +30,10 @@ val gson = GsonBuilder().create()
 
 class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationListener {
 
-    private var currentLocation: Location? = null
     private lateinit var locationManager: LocationManager
-    private val permissionRequestCode = 0
-    private var hasPermissions = false
     private var images = arrayOf<Image>()
+    private val permissionRequestCode = 0
+    private var requiredPermissions = arrayOf(READ_EXTERNAL_STORAGE, ACCESS_FINE_LOCATION)
 
     // used to lock the manualLocation property
     // when true the manualLocation value will not be set to true, when the user edits the longitude or latitude
@@ -127,28 +121,26 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
     private fun startLocationListener() {
         locationManager = activity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10 * 1000, 10.0f, this)
-        currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+        val lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+        if (lastKnownLocation != null)
+            updateLocation(lastKnownLocation)
     }
 
     override fun onLocationChanged(location: Location?) {
         if (location != null && !manualLocation) {
-            manualLocationLock = true
-            longitudeInput.setText(location.longitude.toString())
-            latitudeInput.setText(location.latitude.toString())
-            manualLocationLock = false
+            updateLocation(location)
         }
     }
 
-    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+    override fun onProviderEnabled(provider: String?) {}
+    override fun onProviderDisabled(provider: String?) {}
 
-    }
-
-    override fun onProviderEnabled(provider: String?) {
-
-    }
-
-    override fun onProviderDisabled(provider: String?) {
-
+    private fun updateLocation(location: Location) {
+        manualLocationLock = true
+        longitudeInput.setText(location.longitude.toString())
+        latitudeInput.setText(location.latitude.toString())
+        manualLocationLock = false
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -173,29 +165,24 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
     }
 
     /**
-     * Checks whether or not we have permissions to access the location data.
+     * Checks whether or not we have requiredPermissions to access the location data.
      *
      * Updates the hasPermissions field. Requests permission from the user.
      */
     private fun checkPermissions() {
-        if (checkSelfPermission(activity, ACCESS_FINE_LOCATION) != PERMISSION_GRANTED ||
-            checkSelfPermission(activity, READ_EXTERNAL_STORAGE) != PERMISSION_GRANTED
-        ) {
-            requestPermissions(arrayOf(ACCESS_FINE_LOCATION, READ_EXTERNAL_STORAGE), permissionRequestCode)
-        } else {
-            hasPermissions = true
+        if (!hasPermissions(requiredPermissions))
+            requestPermissions(requiredPermissions, permissionRequestCode)
+        else
             startLocationListener()
-        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when (requestCode) {
-            permissionRequestCode -> { // ACCESS_FINE_LOCATION
-                this.hasPermissions = grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED
-                if (this.hasPermissions)
+            permissionRequestCode -> {
+                if (isGranted(grantResults))
                     startLocationListener()
                 else
-                    toast("You must grant location permissions for the automatic location finder.")
+                    toast("You must grant location requiredPermissions for the automatic location finder.")
             }
         }
     }

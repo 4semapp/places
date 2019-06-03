@@ -29,6 +29,9 @@ fun isGranted(code: Int): Boolean {
 }
 
 fun isGranted(codes: IntArray): Boolean {
+    if (codes.isEmpty())
+        return false
+
     for (code in codes)
         if (code == PackageManager.PERMISSION_DENIED)
             return false
