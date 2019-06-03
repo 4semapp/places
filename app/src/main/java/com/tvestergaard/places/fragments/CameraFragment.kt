@@ -3,7 +3,6 @@ package com.tvestergaard.places.fragments
 import android.Manifest.permission.CAMERA
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.Activity.RESULT_OK
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
@@ -23,11 +22,14 @@ import android.support.v4.app.FragmentTransaction
 import android.support.v4.content.FileProvider
 import com.tvestergaard.places.R.*
 import android.graphics.Bitmap
+import android.support.media.ExifInterface
 import com.tvestergaard.places.*
 import java.io.FileOutputStream
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import com.bumptech.glide.load.resource.bitmap.TransformationUtils.rotateImage
+import java.io.ByteArrayOutputStream
 
 
 // https://developer.android.com/training/camera/photobasics
@@ -126,10 +128,32 @@ class CameraFragment : Fragment(), AnkoLogger {
         if (requestCode == requestImageCaptureCode && resultCode == RESULT_OK) {
             toast(string.pictureTakenSuccess)
             if (takenPicture != null) {
+                correctRotation(takenPicture!!)
                 thumbnail(takenPicture!!)
                 takenPicture = null
             }
         }
+    }
+
+    private fun correctRotation(picture: File) {
+
+        val ei = ExifInterface(picture.absolutePath)
+        val orientation = ei.getAttributeInt(
+            ExifInterface.TAG_ORIENTATION,
+            ExifInterface.ORIENTATION_UNDEFINED
+        )
+
+        val inputBitmap = BitmapFactory.decodeFile(picture.absolutePath)
+        var rotatedBitmap: Bitmap = when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> rotateImage(inputBitmap, 90)
+            ExifInterface.ORIENTATION_ROTATE_180 -> rotateImage(inputBitmap, 180)
+            ExifInterface.ORIENTATION_ROTATE_270 -> rotateImage(inputBitmap, 270)
+            else -> inputBitmap
+        }
+
+        val bos = ByteArrayOutputStream()
+        rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+        picture.writeBytes(bos.toByteArray())
     }
 
     private fun thumbnail(file: File) {
