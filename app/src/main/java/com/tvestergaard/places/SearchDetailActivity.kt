@@ -35,7 +35,7 @@ class SearchDetailActivity : AppCompatActivity() {
         recyclerViewPlace.adapter = FullPictureAdapter(inPlace as InSearchResult, this)
 
         //val mapFragment = supportFragmentManager
-//            .findFragmentById(R.id.map) as SupportMapFragment
+            //.findFragmentById(R.id.map) as SupportMapFragment
 
     }
 
