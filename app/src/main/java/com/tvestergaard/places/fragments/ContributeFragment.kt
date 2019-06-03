@@ -57,6 +57,7 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
 
     override fun onStart() {
         super.onStart()
+        checkPermissions()
 
         checkPermissions()
         choosePicturesButton.setOnClickListener {
