@@ -53,12 +53,12 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        checkPermissions()
     }
 
     override fun onStart() {
         super.onStart()
 
+        checkPermissions()
         choosePicturesButton.setOnClickListener {
             var intent = Intent(activity, SelectPictureActivity::class.java)
             startActivityForResult(intent, selectPictureRequestCode)
