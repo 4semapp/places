@@ -19,7 +19,7 @@ class SelectPictureActivity : AppCompatActivity(), AnkoLogger {
         ), CameraFragment.subdirectoryName
     )
 
-    private var gallery = GalleryFragment.create(mediaStorageDir)
+    private var gallery = GalleryFragment.create(mediaStorageDir, true)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -19,7 +19,7 @@ import java.io.File
 import java.io.IOException
 
 
-class GalleryFragment : Fragment(), GalleryAdapterListener{
+class GalleryFragment : Fragment(), GalleryAdapterListener {
 
 
     private var imageDirectory: File? = null
@@ -68,10 +68,11 @@ class GalleryFragment : Fragment(), GalleryAdapterListener{
     }
 
     override fun onClick(item: Image) {
-        if (item.selected) {
-            selected.remove(item)
-        } else {
-            selected.add(item)
+        if (selectMode) {
+            if (item.selected)
+                selected.remove(item)
+            else
+                selected.add(item)
         }
     }
 
@@ -100,63 +101,65 @@ class GalleryFragment : Fragment(), GalleryAdapterListener{
             return fragment
         }
     }
+
+    private inner class GalleryAdapter(
+        private val images: List<Image>,
+        private val listener: GalleryAdapterListener?
+    ) :
+        RecyclerView.Adapter<GalleryAdapter.ViewHolder>(), AnkoLogger {
+
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.fragment_gallery_image, parent, false)
+            return ViewHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
+            val data = BitmapFactory.decodeStream(images[position].file.inputStream())
+            holder.imageView.setImageBitmap(data)
+
+            with(holder.view) {
+
+                tag = images[position]
+
+                setOnClickListener { v ->
+                    val item = v.tag as Image
+                    listener?.onClick(item)
+                    if (this@GalleryFragment.selectMode) {
+                        if (item.selected) {
+                            item.selected = false
+                            holder.imageView.alpha = 1.0f
+                        } else {
+                            item.selected = true
+                            //holder.imageView.background = resources.getDrawable(R.drawable.back, null)
+                            //ResourcesCompat.getDrawable(resources, R.drawable.back, null)
+                            // ImageViewCompat.setImageTintList(this.image, ColorStateList.valueOf(Color.RED))
+                            holder.imageView.alpha = 0.5f
+                        }
+                    }
+                }
+
+                setOnLongClickListener { v ->
+                    val item = v.tag as Image
+                    listener?.onLongClick(item)
+                    true
+                }
+
+
+            }
+        }
+
+        override fun getItemCount(): Int = images.size
+
+        inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+            val imageView: ImageView = view.image
+        }
+    }
 }
 
 interface GalleryAdapterListener {
     fun onClick(item: Image)
     fun onLongClick(item: Image)
-}
-
-private class GalleryAdapter (
-    private val images: List<Image>,
-    private val listener: GalleryAdapterListener?
-) :
-    RecyclerView.Adapter<GalleryAdapter.ViewHolder>(), AnkoLogger {
-
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.fragment_gallery_image, parent, false)
-        return ViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
-        val data = BitmapFactory.decodeStream(images[position].file.inputStream())
-        holder.imageView.setImageBitmap(data)
-
-        with(holder.view) {
-
-            tag = images[position]
-
-            setOnClickListener { v ->
-                val item = v.tag as Image
-                listener?.onClick(item)
-                if (item.selected) {
-                    item.selected = false
-                    holder.imageView.alpha = 1.0f
-                } else {
-                    item.selected = true
-                    //holder.imageView.background = resources.getDrawable(R.drawable.back, null)
-                    //ResourcesCompat.getDrawable(resources, R.drawable.back, null)
-                    // ImageViewCompat.setImageTintList(this.image, ColorStateList.valueOf(Color.RED))
-                    holder.imageView.alpha = 0.5f
-                }
-            }
-
-            setOnLongClickListener { v ->
-                val item = v.tag as Image
-                listener?.onLongClick(item)
-                true
-            }
-
-
-        }
-    }
-
-    override fun getItemCount(): Int = images.size
-
-    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        val imageView: ImageView = view.image
-    }
 }
