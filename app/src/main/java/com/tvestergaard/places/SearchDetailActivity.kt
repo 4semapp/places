@@ -51,6 +51,7 @@ class SearchDetailActivity : AppCompatActivity(), OnMapReadyCallback, AnkoLogger
     }
 
     private inner class FullPictureAdapter(private val item: InPlace) : RecyclerView.Adapter<ViewHolder>() {
+
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
             return ViewHolder(
                 LayoutInflater.from(this@SearchDetailActivity).inflate(

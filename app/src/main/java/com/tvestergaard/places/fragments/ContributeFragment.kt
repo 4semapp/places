@@ -31,7 +31,7 @@ val gson = GsonBuilder().create()
 class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationListener {
 
     private var locationManager: LocationManager? = null
-    private var images = arrayOf<Image>()
+    private var images = arrayOf<DiskImage>()
     private val permissionRequestCode = 0
     private var requiredPermissions = arrayOf(READ_EXTERNAL_STORAGE, ACCESS_FINE_LOCATION)
 
@@ -149,7 +149,7 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
         when (requestCode) {
             selectPictureRequestCode ->
                 if (data != null)
-                    images = data.extras["selected"] as Array<Image>
+                    images = data.extras["selected"] as Array<DiskImage>
         }
 
         submitPlaceButton.isEnabled = images.isNotEmpty()

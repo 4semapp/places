@@ -24,15 +24,15 @@ class GalleryFragment : Fragment(), GalleryAdapterListener {
 
     private var imageDirectory: File? = null
     private lateinit var adapter: GalleryAdapter
-    private val images: MutableList<Image> = ArrayList()
+    private val diskImages: MutableList<DiskImage> = ArrayList()
     private var selectMode: Boolean = false
-    val selected = mutableListOf<Image>()
+    val selected = mutableListOf<DiskImage>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         val view = inflater.inflate(R.layout.fragment_gallery, container, false)
         if (view is RecyclerView) {
-            this.adapter = GalleryAdapter(images, this)
+            this.adapter = GalleryAdapter(diskImages, this)
             view.adapter = this.adapter
             val orientation = resources.configuration.orientation
             view.layoutManager = GridLayoutManager(
@@ -65,11 +65,11 @@ class GalleryFragment : Fragment(), GalleryAdapterListener {
      * Adds a new image to the gallery on screen.
      */
     fun addImage(image: File) {
-        this.images.add(Image(image, false))
+        this.diskImages.add(DiskImage(image, false))
         this.adapter.notifyDataSetChanged()
     }
 
-    override fun onClick(item: Image) {
+    override fun onClick(item: DiskImage) {
         if (selectMode) {
             if (item.selected)
                 selected.remove(item)
@@ -78,13 +78,13 @@ class GalleryFragment : Fragment(), GalleryAdapterListener {
         }
     }
 
-    override fun onLongClick(item: Image) {
-        alert("Are you sure you want to delete this image?", "Delete Image") {
+    override fun onLongClick(item: DiskImage) {
+        alert("Are you sure you want to delete this image?", "Delete DiskImage") {
             yesButton {
                 try {
                     item.file.delete()
                     File(item.file.parent, item.file.name.removePrefix("thumb_")).delete()
-                    images.remove(item)
+                    diskImages.remove(item)
                     adapter.notifyDataSetChanged()
                     toast("The image war successfully been deleted.")
                 } catch (e: IOException) {
@@ -105,7 +105,7 @@ class GalleryFragment : Fragment(), GalleryAdapterListener {
     }
 
     private inner class GalleryAdapter(
-        private val images: List<Image>,
+        private val diskImages: List<DiskImage>,
         private val listener: GalleryAdapterListener?
     ) :
         RecyclerView.Adapter<GalleryAdapter.ViewHolder>(), AnkoLogger {
@@ -119,15 +119,15 @@ class GalleryFragment : Fragment(), GalleryAdapterListener {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-            val data = BitmapFactory.decodeStream(images[position].file.inputStream())
+            val data = BitmapFactory.decodeStream(diskImages[position].file.inputStream())
             holder.imageView.setImageBitmap(data)
 
             with(holder.view) {
 
-                tag = images[position]
+                tag = diskImages[position]
 
                 setOnClickListener { v ->
-                    val item = v.tag as Image
+                    val item = v.tag as DiskImage
                     listener?.onClick(item)
                     if (this@GalleryFragment.selectMode) {
                         if (item.selected) {
@@ -144,7 +144,7 @@ class GalleryFragment : Fragment(), GalleryAdapterListener {
                 }
 
                 setOnLongClickListener { v ->
-                    val item = v.tag as Image
+                    val item = v.tag as DiskImage
                     listener?.onLongClick(item)
                     true
                 }
@@ -153,7 +153,7 @@ class GalleryFragment : Fragment(), GalleryAdapterListener {
             }
         }
 
-        override fun getItemCount(): Int = images.size
+        override fun getItemCount(): Int = diskImages.size
 
         inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
             val imageView: ImageView = view.image
@@ -162,6 +162,6 @@ class GalleryFragment : Fragment(), GalleryAdapterListener {
 }
 
 interface GalleryAdapterListener {
-    fun onClick(item: Image)
-    fun onLongClick(item: Image)
+    fun onClick(item: DiskImage)
+    fun onLongClick(item: DiskImage)
 }
