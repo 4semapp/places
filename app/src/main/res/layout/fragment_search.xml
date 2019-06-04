@@ -12,22 +12,11 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:queryHint="@string/search_input_placeholder"
-            android:inputType="textShortMessage"
-            android:text="Test1"
-    />
-
-    <!--<Button
-            android:id="@+id/searchButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/search_button_text"
-            android:background="@color/colorPrimary"
-            android:textColor="#fff"
-            android:padding="20dp"/>-->
+            android:inputType="textShortMessage"/>
     <android.support.v7.widget.RecyclerView
             android:id="@+id/searchResults"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20sp">
-    </android.support.v7.widget.RecyclerView>
+            android:textSize="20sp"
+            android:layout_marginBottom="50dp"/>
 </LinearLayout>
