@@ -27,7 +27,12 @@
 
     <!-- Search -->
     <string name="search_input_placeholder">Search by title</string>
-    <!--<string name="search_button_text">Search</string>-->
+
+    <!-- Profile -->
+    <string name="profile_name_label">Name</string>
+    <string name="profile_location_label">Location</string>
+    <string name="profile_number_of_posts_label">Posts</string>
+    <string name="profile_sign_out_text">SIGN OUT</string>
 
     <!-- Debug -->
     <string name="title_item_list">Items</string>

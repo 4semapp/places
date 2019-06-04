@@ -31,6 +31,7 @@ class ProfileFragment : Fragment(), AnkoLogger {
             nameText.text = name
             localeText.text = locale
             numberOfPostsText.text = "-"
+            profilePicture.contentDescription = "$name' profile picture"
 
             doAsync {
                 val count = backend.countPosts(main.account!!)
@@ -38,6 +39,10 @@ class ProfileFragment : Fragment(), AnkoLogger {
                     numberOfPostsText.text = count.toString()
                 }
             }
+        }
+
+        signOutButton.setOnClickListener {
+            main.signOut()
         }
     }
 

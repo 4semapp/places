@@ -1,7 +1,7 @@
 package com.tvestergaard.places.transport
 
 import com.google.gson.GsonBuilder
-import com.tvestergaard.places.AuthenticatedUser
+import com.tvestergaard.places.fragments.AuthenticatedUser
 import khttp.get
 import khttp.post
 

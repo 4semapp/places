@@ -1,10 +1,10 @@
 package com.tvestergaard.places.fragments
 
+import android.content.res.Configuration
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -23,7 +23,6 @@ class GalleryFragment : Fragment(), GalleryAdapterListener {
 
 
     private var imageDirectory: File? = null
-    private var columnCount = 2
     private lateinit var adapter: GalleryAdapter
     private val images: MutableList<Image> = ArrayList()
     private var selectMode: Boolean = false
@@ -35,10 +34,13 @@ class GalleryFragment : Fragment(), GalleryAdapterListener {
         if (view is RecyclerView) {
             this.adapter = GalleryAdapter(images, this)
             view.adapter = this.adapter
-            view.layoutManager = when {
-                columnCount <= 1 -> LinearLayoutManager(context)
-                else -> GridLayoutManager(context, columnCount)
-            }
+            val orientation = resources.configuration.orientation
+            view.layoutManager = GridLayoutManager(
+                context, when (orientation) {
+                    Configuration.ORIENTATION_LANDSCAPE -> 4
+                    else -> 2
+                }
+            )
         }
 
         if (imageDirectory != null)
