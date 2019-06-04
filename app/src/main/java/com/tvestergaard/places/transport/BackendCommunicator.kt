@@ -51,7 +51,6 @@ class BackendCommunicator {
                 "Authorization" to "Bearer " + account.token
             )
         )
-
         return gson.fromJson(response.text, Integer::class.java).toInt()
     }
 
