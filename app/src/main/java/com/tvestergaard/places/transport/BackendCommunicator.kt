@@ -42,7 +42,6 @@ class BackendCommunicator {
         if (!ok(response.statusCode))
             return null
         return gson.fromJson(response.text, OutPlace::class.java)
-
     }
 
     fun countPosts(account: AuthenticatedUser): Int {
@@ -57,7 +56,7 @@ class BackendCommunicator {
     }
 
     companion object {
-        private const val ROOT = "http://7dabf0dc.ngrok.io"
+        private const val ROOT = "http://f039a20c.ngrok.io"
         var authenticatedUser: AuthenticatedUser? = null
         const val IMG_ROOT = "$ROOT/images"
     }

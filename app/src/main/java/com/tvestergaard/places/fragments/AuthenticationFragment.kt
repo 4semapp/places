@@ -1,6 +1,7 @@
 package com.tvestergaard.places.fragments
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -43,8 +44,16 @@ class AuthenticationFragment : Fragment() {
 
             if (lastSignIn != null) {
                 val account = BackendCommunicator().authenticateWithBackend(lastSignIn.idToken)
+                runOnUiThread {
+                    authenticateButton.visibility = View.GONE
+                    loading.visibility = View.VISIBLE
+                }
                 if (account != null) {
                     authenticationComplete(account)
+                }
+            } else {
+                runOnUiThread {
+                    authenticateButton.visibility = View.VISIBLE
                 }
             }
         }
@@ -73,6 +82,10 @@ class AuthenticationFragment : Fragment() {
 
     private fun handleSignInResult(authenticationAttempt: Task<GoogleSignInAccount>) {
         try {
+            runOnUiThread {
+                authenticateButton.visibility = View.GONE
+                loading.visibility = View.VISIBLE
+            }
             val account = authenticationAttempt.getResult(ApiException::class.java)
             doAsync {
                 val backendAuthenticationUser = BackendCommunicator().authenticateWithBackend(account?.idToken)

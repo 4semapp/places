@@ -5,11 +5,22 @@
                 android:layout_height="match_parent"
                 android:id="@+id/parent"
                 tools:context=".MainActivity" android:padding="10sp">
+    <ProgressBar
+            android:id="@+id/loading"
+            style="@android:style/Widget.ProgressBar.Small.Inverse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:layout_gravity="center"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+    />
     <com.google.android.gms.common.SignInButton
             android:id="@+id/authenticateButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_centerInParent="true"
+            android:visibility="gone"
     />
 </RelativeLayout>
