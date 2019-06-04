@@ -12,6 +12,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.tvestergaard.places.fragments.*
 import com.tvestergaard.places.fragments.AuthenticationFragment.Companion.authenticationRequestCode
+import com.tvestergaard.places.transport.BackendCommunicator
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.toast
@@ -66,6 +67,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
 
     fun onAuthenticationSuccess(user: AuthenticatedUser) {
         this.account = user
+        BackendCommunicator.authenticatedUser = user
         toast("Welcome back ${user.name}")
         show(DEFAULT_FRAGMENT)
     }

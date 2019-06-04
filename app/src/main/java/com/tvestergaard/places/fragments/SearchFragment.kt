@@ -18,8 +18,8 @@ import kotlinx.android.synthetic.main.fragment_search.*
 import com.tvestergaard.places.SearchDetailActivity
 import com.tvestergaard.places.glide
 import com.tvestergaard.places.runOnUiThread
-import com.tvestergaard.places.transport.InSearchResult
-import kotlinx.android.synthetic.main.fragment_search_master_item.view.*
+import com.tvestergaard.places.transport.InPlace
+import kotlinx.android.synthetic.main.fragment_search_item.view.*
 import org.jetbrains.anko.*
 import com.tvestergaard.places.R.*
 
@@ -27,7 +27,7 @@ import com.tvestergaard.places.R.*
 class SearchFragment : Fragment(), AnkoLogger {
 
     private val backendCommunicator = BackendCommunicator()
-    private val results = mutableListOf<InSearchResult>()
+    private val results = mutableListOf<InPlace>()
     private lateinit var adapter: SearchResultsAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
@@ -66,12 +66,12 @@ class SearchFragment : Fragment(), AnkoLogger {
         }
     }
 
-    private class SearchResultsAdapter(val items: List<InSearchResult>, val context: Context) : Adapter<ViewHolder>() {
+    private class SearchResultsAdapter(val items: List<InPlace>, val context: Context) : Adapter<ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
             return ViewHolder(
                 LayoutInflater.from(context).inflate(
-                    layout.fragment_search_master_item,
+                    layout.fragment_search_item,
                     parent,
                     false
                 )
@@ -92,7 +92,7 @@ class SearchFragment : Fragment(), AnkoLogger {
             }
         }
 
-        private fun showDetail(place: InSearchResult) {
+        private fun showDetail(place: InPlace) {
             val intent = Intent(context, SearchDetailActivity::class.java)
             intent.putExtra("place", place)
             context.startActivity(intent)

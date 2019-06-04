@@ -21,13 +21,30 @@ class BackendCommunicator {
         return gson.fromJson(response.text, AuthenticatedUser::class.java)
     }
 
-    fun search(term: String): List<InSearchResult> {
-        val url = "$ROOT/places/search/$term"
-        val response = get(url)
+    fun getHomePlaces(): List<InPlace> {
+        val url = "$ROOT/home"
+        val response = get(
+            url, headers = mapOf(
+                "Authorization" to "Bearer " + authenticatedUser!!.token
+            )
+        )
         if (!ok(response.statusCode))
             return listOf()
 
-        return gson.fromJson(response.text, Array<InSearchResult>::class.java).toList()
+        return gson.fromJson(response.text, Array<InPlace>::class.java).toList()
+    }
+
+    fun search(term: String): List<InPlace> {
+        val url = "$ROOT/places/search/$term"
+        val response = get(
+            url, headers = mapOf(
+                "Authorization" to "Bearer " + authenticatedUser!!.token
+            )
+        )
+        if (!ok(response.statusCode))
+            return listOf()
+
+        return gson.fromJson(response.text, Array<InPlace>::class.java).toList()
     }
 
     private fun ok(code: Int) = code in 200..299

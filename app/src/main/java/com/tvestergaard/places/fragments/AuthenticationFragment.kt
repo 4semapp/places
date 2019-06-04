@@ -41,8 +41,7 @@ class AuthenticationFragment : Fragment() {
 
         doAsync {
             val lastSignIn = GoogleSignIn.getLastSignedInAccount(activity)
-
-            if (lastSignIn != null) {
+            if (lastSignIn != null && !lastSignIn.isExpired) {
                 val account = BackendCommunicator().authenticateWithBackend(lastSignIn.idToken)
                 runOnUiThread {
                     authenticateButton.visibility = View.GONE

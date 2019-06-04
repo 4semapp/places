@@ -2,7 +2,7 @@ package com.tvestergaard.places.transport
 
 import java.io.Serializable
 
-data class InSearchResult(
+data class InPlace(
     val id: Int,
     val title: String,
     val description: String,
@@ -10,7 +10,7 @@ data class InSearchResult(
     val longitude: Float,
     val pictures: Array<InPicture>,
     var user: InUser
-): Serializable
+) : Serializable
 
 data class OutPlace(
     var title: String,
@@ -28,10 +28,10 @@ data class OutPicture(
 data class InPicture(
     var thumbName: String,
     var fullName: String
-): Serializable
+) : Serializable
 
 data class InUser(
     var id: Int,
     var name: String
-): Serializable
+) : Serializable
 
