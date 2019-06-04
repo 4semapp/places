@@ -45,6 +45,17 @@ class BackendCommunicator {
 
     }
 
+    fun countPosts(account: AuthenticatedUser): Int {
+        val response = get(
+            "$ROOT/places/count", headers = mapOf(
+                "Content-Type" to "application/json",
+                "Authorization" to "Bearer " + account.token
+            )
+        )
+
+        return gson.fromJson(response.text, Integer::class.java).toInt()
+    }
+
     companion object {
         private const val ROOT = "http://7dabf0dc.ngrok.io"
         var authenticatedUser: AuthenticatedUser? = null
