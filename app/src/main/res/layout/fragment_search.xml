@@ -12,7 +12,10 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:queryHint="@string/search_input_placeholder"
-            android:inputType="textShortMessage"/>
+            android:inputType="textShortMessage"
+            android:text="Test1"
+    />
+
     <!--<Button
             android:id="@+id/searchButton"
             android:layout_width="match_parent"

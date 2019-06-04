@@ -15,8 +15,8 @@ data class InSearchResult(
 data class OutPlace(
     var title: String,
     var description: String,
-    var lat: Float,
-    var lon: Float,
+    var latitude: Float,
+    var longitude: Float,
     var pictures: Array<OutPicture>
 )
 

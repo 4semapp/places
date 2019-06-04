@@ -96,8 +96,8 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
         val toCreate = OutPlace(
             title = titleInput.text.toString(),
             description = descriptionInput.text.toString(),
-            lat = latitudeInput.text.toString().toFloat(),
-            lon = longitudeInput.text.toString().toFloat(),
+            latitude = latitudeInput.text.toString().toFloat(),
+            longitude = longitudeInput.text.toString().toFloat(),
             pictures = base64Images.toTypedArray()
         )
 
