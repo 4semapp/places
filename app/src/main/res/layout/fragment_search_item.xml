@@ -25,6 +25,12 @@
                 android:textSize="25sp"
                 android:text=""/>
         <TextView
+                android:id="@+id/location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:text=""/>
+        <TextView
                 android:id="@+id/poster"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -2,6 +2,7 @@ package com.tvestergaard.places.fragments
 
 import android.content.Context
 import android.content.Intent
+import android.location.Geocoder
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -85,6 +86,7 @@ class SearchFragment : Fragment(), AnkoLogger {
                 with(holder) {
                     val place = items[position]
                     title.text = place.title
+                    location.text = reverseGeocode(place.latitude.toDouble(), place.longitude.toDouble())
                     poster.text = place.user.name
                     thumbnail.glide(place.pictures[0].thumbName)
                     container.setOnClickListener { this@SearchResultsAdapter.showDetail(place) }
@@ -97,12 +99,31 @@ class SearchFragment : Fragment(), AnkoLogger {
             intent.putExtra("place", place)
             context.startActivity(intent)
         }
+
+        private fun reverseGeocode(latitude: Double, longitude: Double): String {
+            val geoCoder = Geocoder(context)
+            val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
+            if (addresses != null && addresses.size > 0) {
+                val address = addresses[0]
+                val sb = StringBuilder()
+                for (i in 0 until address.maxAddressLineIndex) {
+                    sb.append(address.getAddressLine(i)).append(", ")
+                }
+                sb.append(address.locality).append(", ")
+                sb.append(address.postalCode).append(", ")
+                sb.append(address.countryName)
+                return sb.toString()
+            }
+
+            return "Could not locate."
+        }
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.title
         val thumbnail: ImageView = view.thumbnail
         val poster: TextView = view.poster
+        val location: TextView = view.location
         val container = view
     }
 
