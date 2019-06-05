@@ -24,7 +24,7 @@ class GalleryFragment : Fragment(), GalleryAdapterListener {
 
     private var imageDirectory: File? = null
     private lateinit var adapter: GalleryAdapter
-    private val diskImages: MutableList<DiskImage> = ArrayList()
+    private val diskImages: MutableList<DiskImage> = mutableListOf()
     private var selectMode: Boolean = false
     val selected = mutableListOf<DiskImage>()
 

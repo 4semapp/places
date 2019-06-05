@@ -2,9 +2,11 @@ package com.tvestergaard.places.fragments
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.location.Geocoder
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.Adapter
@@ -38,7 +40,7 @@ class SearchFragment : Fragment(), AnkoLogger {
         super.onStart()
 
         adapter = SearchResultsAdapter(results, activity)
-        searchResults.layoutManager = LinearLayoutManager(activity)
+        searchResults.layoutManager = getLayoutManager()
         searchResults.adapter = adapter
 
         searchInput.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -50,6 +52,15 @@ class SearchFragment : Fragment(), AnkoLogger {
             override fun onQueryTextChange(p0: String?) = true
         })
 
+    }
+
+    private fun getLayoutManager(): LinearLayoutManager {
+        return GridLayoutManager(
+            context, when (resources.configuration.orientation) {
+                Configuration.ORIENTATION_LANDSCAPE -> 2
+                else -> 1
+            }
+        )
     }
 
     private fun searchFor(search: String) {
