@@ -22,6 +22,7 @@ import com.tvestergaard.places.transport.OutPicture
 import com.tvestergaard.places.transport.OutPlace
 import kotlinx.android.synthetic.main.fragment_contribute.*
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.support.v4.toast
 import java.io.File
@@ -83,6 +84,9 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
     }
 
     private fun submitPlace() {
+
+        submitPlaceButton.isEnabled = false
+        submitPlaceButton.backgroundColor = 0xFFAAAAAA.toInt()
 
         val base64Images = images.map { img ->
             val thumbnailFile = img.file
