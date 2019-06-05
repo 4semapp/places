@@ -47,7 +47,7 @@ class SearchDetailActivity : AppCompatActivity(), OnMapReadyCallback, AnkoLogger
     override fun onMapReady(map: GoogleMap) {
         val position = LatLng(place.latitude.toDouble(), place.longitude.toDouble())
         map.addMarker(MarkerOptions().position(position).title(place.title))
-        map.moveCamera(CameraUpdateFactory.newLatLng(position))
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15f))
     }
 
     private inner class FullPictureAdapter(private val item: InPlace) : RecyclerView.Adapter<ViewHolder>() {
