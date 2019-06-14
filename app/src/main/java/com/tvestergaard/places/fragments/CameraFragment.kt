@@ -174,9 +174,9 @@ class CameraFragment : Fragment(), AnkoLogger {
         const val fileProviderName = "${BuildConfig.APPLICATION_ID}.provider"
 
         @JvmStatic
-        fun newInstance() =
+        fun newInstance(prevState: Bundle? = Bundle()) =
             CameraFragment().apply {
-                arguments = Bundle()
+                arguments = prevState
             }
     }
 }

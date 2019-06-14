@@ -31,13 +31,13 @@ class SearchFragment : Fragment(), AnkoLogger {
     private val backendCommunicator = BackendCommunicator()
     private val results = mutableListOf<InPlace>()
     private lateinit var adapter: SearchResultsAdapter
+    private var lastSearch: String? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(layout.fragment_search, container, false)
 
     override fun onStart() {
         super.onStart()
-
         adapter = SearchResultsAdapter(results, activity)
         searchResults.layoutManager = LinearLayoutManager(activity)
         searchResults.adapter = adapter
@@ -45,23 +45,23 @@ class SearchFragment : Fragment(), AnkoLogger {
         searchInput.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(search: String?): Boolean {
                 this@SearchFragment.searchFor(search ?: "")
+                this@SearchFragment.lastSearch = search
                 return true
             }
 
             override fun onQueryTextChange(p0: String?) = true
         })
-    }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        if (savedInstanceState != null) {
-            this.searchInput.setQuery(savedInstanceState.get("query") as String, true)
+        if (arguments != null) {
+            val query = arguments.get("query")
+            if (query != null)
+                this.searchInput.setQuery(arguments.get("query") as String, true)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString("query", this.searchInput.query.toString())
+        outState.putString("query", lastSearch)
     }
 
     private fun searchFor(search: String) {
@@ -123,9 +123,9 @@ class SearchFragment : Fragment(), AnkoLogger {
 
     companion object {
         @JvmStatic
-        fun newInstance() =
+        fun newInstance(prevState: Bundle? = Bundle()) =
             SearchFragment().apply {
-                arguments = Bundle()
+                arguments = prevState
             }
     }
 }

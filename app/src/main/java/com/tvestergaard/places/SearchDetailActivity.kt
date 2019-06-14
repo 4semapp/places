@@ -30,7 +30,6 @@ class SearchDetailActivity : AppCompatActivity(), OnMapReadyCallback, AnkoLogger
         setContentView(R.layout.activity_search_detail)
         place = intent.extras.getSerializable("place") as InPlace
 
-
         recyclerViewPlace.layoutManager = LinearLayoutManager(this)
         recyclerViewPlace.adapter = FullPictureAdapter(place)
 

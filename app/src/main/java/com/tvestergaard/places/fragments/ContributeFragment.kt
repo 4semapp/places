@@ -167,11 +167,12 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
         }
     }
 
+
     companion object {
         @JvmStatic
-        fun newInstance() =
+        fun newInstance(prevState: Bundle? = Bundle()) =
             ContributeFragment().apply {
-                arguments = Bundle()
+                arguments = prevState
             }
 
         const val selectPictureRequestCode = 2

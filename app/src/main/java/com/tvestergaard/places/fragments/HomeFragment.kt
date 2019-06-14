@@ -47,14 +47,6 @@ class HomeFragment : Fragment(), AnkoLogger {
         }
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance() =
-            HomeFragment().apply {
-                arguments = Bundle()
-            }
-    }
-
     private inner class HomePlacesAdapter(val places: List<InPlace>) : RecyclerView.Adapter<ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
@@ -94,5 +86,13 @@ class HomeFragment : Fragment(), AnkoLogger {
         val description: TextView = view.descriptionTextView
         val location: TextView = view.locationTextView
         val container: View = view
+    }
+
+    companion object {
+        @JvmStatic
+        fun newInstance(prevState: Bundle? = Bundle()) =
+            HomeFragment().apply {
+                arguments = prevState
+            }
     }
 }

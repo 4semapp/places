@@ -98,10 +98,11 @@ class AuthenticationFragment : Fragment() {
 
     companion object {
         const val authenticationRequestCode = 1
+
         @JvmStatic
-        fun newInstance() =
+        fun newInstance(prevState: Bundle? = Bundle()) =
             AuthenticationFragment().apply {
-                arguments = Bundle()
+                arguments = prevState
             }
     }
 }

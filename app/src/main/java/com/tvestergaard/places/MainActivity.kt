@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
 
     private var currentFragmentId = DEFAULT_FRAGMENT
     private var currentFragment: Fragment? = null
+    private var fragmentBundle: Bundle = Bundle()
     var account: AuthenticatedUser? = null
     lateinit var googleAuthClient: GoogleSignInClient
 
@@ -38,6 +39,8 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
 
         if (savedInstanceState != null) {
             account = savedInstanceState.getSerializable("account") as AuthenticatedUser?
+            fragmentBundle = savedInstanceState.getBundle("fragmentBundle")
+            currentFragmentId = savedInstanceState.getInt(CURRENT_NAVIGATION_BUNDLE_KEY, DEFAULT_FRAGMENT)
         }
 
         if (account == null) {
@@ -45,30 +48,18 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
             return
         }
 
-        val continueKey = continueFragment(savedInstanceState)
-        switchFragment(continueKey, createFragmentFromId(continueKey))
+        switchFragment(currentFragmentId, createFragmentFromId(currentFragmentId))
     }
 
-    private fun continueFragment(savedInstanceState: Bundle?): Int {
-        /*if (savedInstanceState != null) {
-            val key = savedInstanceState.getInt(CURRENT_NAVIGATION_BUNDLE_KEY, DEFAULT_FRAGMENT)
-            val content = supportFragmentManager.getFragment(savedInstanceState, "fragment_$key");
-            switchFragment(key, content ?: createFragmentFromId(key))
-            return true
-        }*/
-
-        if (savedInstanceState == null) {
-            return DEFAULT_FRAGMENT
-        }
-
-        return savedInstanceState.getInt(CURRENT_NAVIGATION_BUNDLE_KEY, DEFAULT_FRAGMENT)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState!!.putSerializable(CURRENT_NAVIGATION_BUNDLE_KEY, currentFragmentId)
         outState.putSerializable("account", account)
-        supportFragmentManager.putFragment(outState, "fragment_$currentFragmentId", currentFragment);
+        outState.putSerializable(CURRENT_NAVIGATION_BUNDLE_KEY, currentFragmentId)
+        if (!isFinishing) {
+            fragmentBundle = Bundle()
+            currentFragment?.onSaveInstanceState(fragmentBundle)
+            outState.putBundle("fragmentBundle", fragmentBundle)
+        }
     }
 
     fun onAuthenticationSuccess(user: AuthenticatedUser) {
@@ -99,7 +90,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         0 -> AuthenticationFragment.newInstance()
         1 -> HomeFragment.newInstance()
         2 -> CameraFragment.newInstance()
-        3 -> SearchFragment.newInstance()
+        3 -> SearchFragment.newInstance(fragmentBundle)
         4 -> ContributeFragment.newInstance()
         5 -> ProfileFragment.newInstance()
         else -> throw RuntimeException("unhandled fragment type $id.")
@@ -143,13 +134,12 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
                 R.anim.slide_out_right
             )
 
-
-        currentFragment = fragment
-
         transaction
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).replace(R.id.fragmentContainer, fragment)
             .commitAllowingStateLoss()
 
+
+        currentFragment = fragment
         currentFragmentId = id
     }
 
