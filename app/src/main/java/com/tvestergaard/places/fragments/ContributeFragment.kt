@@ -3,6 +3,7 @@ package com.tvestergaard.places.fragments
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.annotation.SuppressLint
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.location.Location
@@ -36,6 +37,7 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
     private var images = arrayOf<DiskImage>()
     private val permissionRequestCode = 0
     private var requiredPermissions = arrayOf(READ_EXTERNAL_STORAGE, ACCESS_FINE_LOCATION)
+    private val onResumeOperations = mutableListOf<() -> Unit>()
 
     // used to lock the manualLocation property
     // when true the manualLocation value will not be set to true, when the user edits the longitude or latitude
@@ -75,6 +77,12 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
         submitPlaceButton.setOnClickListener { submitPlace() }
         latitudeInput.addTextChangedListener(Watcher())
         longitudeInput.addTextChangedListener(Watcher())
+
+        onResumeOperations.forEach {
+            it.invoke()
+        }
+
+        onResumeOperations.clear()
     }
 
     private inner class Watcher : TextWatcher, AnkoLogger {
@@ -92,6 +100,9 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
 
         submitPlaceButton.isEnabled = false
         submitPlaceButton.backgroundColor = 0xFFAAAAAA.toInt()
+
+        choosePicturesButton.isEnabled = false
+        choosePicturesButton.backgroundColor = 0xFFAAAAAA.toInt()
 
         val base64Images = images.map { img ->
             val thumbnailFile = img.file
@@ -157,13 +168,16 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             selectPictureRequestCode ->
-                if (data != null)
+                if (resultCode == RESULT_OK && data != null) {
                     images = data.extras["selected"] as Array<DiskImage>
-        }
-
-        if (images.isNotEmpty()) {
-            submitPlaceButton.isEnabled = true
-            submitPlaceButton.backgroundColor = 0xFFFF5500.toInt() // orange
+                    this.manualLocation = true
+                    onResumeOperations.add {
+                        if (images.isNotEmpty()) {
+                            submitPlaceButton.isEnabled = true
+                            submitPlaceButton.backgroundColor = 0xFFFF5500.toInt() // orange
+                        }
+                    }
+                }
         }
     }
 
