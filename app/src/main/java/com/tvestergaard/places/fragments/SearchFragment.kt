@@ -2,9 +2,11 @@ package com.tvestergaard.places.fragments
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.location.Geocoder
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.Adapter
@@ -39,7 +41,13 @@ class SearchFragment : Fragment(), AnkoLogger {
     override fun onStart() {
         super.onStart()
         adapter = SearchResultsAdapter(results, activity)
-        searchResults.layoutManager = LinearLayoutManager(activity)
+        val orientation = resources.configuration.orientation
+        searchResults.layoutManager = GridLayoutManager(
+            context, when (orientation) {
+                Configuration.ORIENTATION_LANDSCAPE -> 2
+                else -> 1
+            }
+        )
         searchResults.adapter = adapter
 
         searchInput.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -52,16 +60,22 @@ class SearchFragment : Fragment(), AnkoLogger {
             override fun onQueryTextChange(p0: String?) = true
         })
 
-        if (arguments != null) {
+        if (!arguments.isEmpty) {
             val query = arguments.get("query")
-            if (query != null)
-                this.searchInput.setQuery(arguments.get("query") as String, true)
+            if (query != null) {
+                this.lastSearch = query as String
+                this.searchInput.setQuery(lastSearch, false)
+                this.results.addAll(arguments.get("results") as Array<InPlace>)
+                this.adapter.notifyDataSetChanged()
+            }
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        info("count=${results.size}")
         outState.putString("query", lastSearch)
+        outState.putSerializable("results", this.results.toTypedArray())
     }
 
     private fun searchFor(search: String) {

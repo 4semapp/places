@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
 
     private var currentFragmentId = DEFAULT_FRAGMENT
     private var currentFragment: Fragment? = null
-    private var fragmentBundle: Bundle = Bundle()
+    private var fragmentBundles = HashMap<Int, Bundle?>()
     var account: AuthenticatedUser? = null
     lateinit var googleAuthClient: GoogleSignInClient
 
@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
 
         if (savedInstanceState != null) {
             account = savedInstanceState.getSerializable("account") as AuthenticatedUser?
-            fragmentBundle = savedInstanceState.getBundle("fragmentBundle")
+            fragmentBundles = savedInstanceState.getSerializable("fragmentBundles") as HashMap<Int, Bundle?>
             currentFragmentId = savedInstanceState.getInt(CURRENT_NAVIGATION_BUNDLE_KEY, DEFAULT_FRAGMENT)
         }
 
@@ -56,9 +56,10 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         outState.putSerializable("account", account)
         outState.putSerializable(CURRENT_NAVIGATION_BUNDLE_KEY, currentFragmentId)
         if (!isFinishing) {
-            fragmentBundle = Bundle()
+            val fragmentBundle = Bundle()
             currentFragment?.onSaveInstanceState(fragmentBundle)
-            outState.putBundle("fragmentBundle", fragmentBundle)
+            fragmentBundles[currentFragmentId] = fragmentBundle
+            outState.putSerializable("fragmentBundles", fragmentBundles)
         }
     }
 
@@ -86,14 +87,19 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         }
     }
 
-    private fun createFragmentFromId(id: Int) = when (id) {
-        0 -> AuthenticationFragment.newInstance()
-        1 -> HomeFragment.newInstance()
-        2 -> CameraFragment.newInstance()
-        3 -> SearchFragment.newInstance(fragmentBundle)
-        4 -> ContributeFragment.newInstance()
-        5 -> ProfileFragment.newInstance()
-        else -> throw RuntimeException("unhandled fragment type $id.")
+    private fun createFragmentFromId(id: Int): Fragment {
+
+        val bundle = fragmentBundles.getOrDefault(id, Bundle())
+
+        return when (id) {
+            0 -> AuthenticationFragment.newInstance(bundle)
+            1 -> HomeFragment.newInstance(bundle)
+            2 -> CameraFragment.newInstance(bundle)
+            3 -> SearchFragment.newInstance(bundle)
+            4 -> ContributeFragment.newInstance(bundle)
+            5 -> ProfileFragment.newInstance(bundle)
+            else -> throw RuntimeException("unhandled fragment type $id.")
+        }
     }
 
     private fun createNavigationListener(): BottomNavigationView.OnNavigationItemSelectedListener {

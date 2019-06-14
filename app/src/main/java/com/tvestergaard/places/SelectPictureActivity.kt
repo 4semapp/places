@@ -1,5 +1,6 @@
 package com.tvestergaard.places
 
+import android.app.Activity
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -34,7 +35,7 @@ class SelectPictureActivity : AppCompatActivity(), AnkoLogger {
             if (gallery.selected.size > 0) {
                 val intent = Intent()
                 intent.putExtra("selected", gallery.selected.toTypedArray())
-                setResult(2, intent)
+                setResult(Activity.RESULT_OK, intent)
                 finish()
             } else {
                 toast("No Pictures selected")
@@ -49,6 +50,4 @@ class SelectPictureActivity : AppCompatActivity(), AnkoLogger {
             .replace(R.id.galleryFragmentContainer, gallery)
             .commitAllowingStateLoss()
     }
-
-
 }
