@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.fragment_contribute.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.info
 import org.jetbrains.anko.support.v4.toast
 import java.io.File
 
@@ -66,7 +67,11 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
             startActivityForResult(intent, selectPictureRequestCode)
         }
 
-        submitPlaceButton.isEnabled = images.isNotEmpty()
+        if (images.isEmpty()) {
+            submitPlaceButton.isEnabled = false
+            submitPlaceButton.backgroundColor = 0xFFAAAAAA.toInt()
+        }
+
         submitPlaceButton.setOnClickListener { submitPlace() }
         latitudeInput.addTextChangedListener(Watcher())
         longitudeInput.addTextChangedListener(Watcher())
@@ -156,7 +161,10 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
                     images = data.extras["selected"] as Array<DiskImage>
         }
 
-        submitPlaceButton.isEnabled = images.isNotEmpty()
+        if (images.isNotEmpty()) {
+            submitPlaceButton.isEnabled = true
+            submitPlaceButton.backgroundColor = 0xFFFF5500.toInt() // orange
+        }
     }
 
     companion object {

@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.tvestergaard.places.R
 import com.tvestergaard.places.SearchDetailActivity
+import com.tvestergaard.places.reverseGeocode
 import com.tvestergaard.places.runOnUiThread
 import com.tvestergaard.places.transport.BackendCommunicator
 import com.tvestergaard.places.transport.InPlace
@@ -71,8 +72,9 @@ class HomeFragment : Fragment(), AnkoLogger {
 
             with(holder!!) {
                 title.text = place.title
+                user.text = place.user.name
                 description.text = place.description
-                location.text = reverseGeocode(place.latitude.toDouble(), place.longitude.toDouble())
+                location.text = context.reverseGeocode(place.latitude.toDouble(), place.longitude.toDouble())
                 container.setOnClickListener { showDetail(place) }
             }
         }
@@ -83,29 +85,12 @@ class HomeFragment : Fragment(), AnkoLogger {
             context.startActivity(intent)
         }
 
-        private fun reverseGeocode(latitude: Double, longitude: Double): String {
-            val geoCoder = Geocoder(this@HomeFragment.activity)
-            val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
-            if (addresses != null && addresses.size > 0) {
-                val address = addresses[0]
-                val sb = StringBuilder()
-                for (i in 0 until address.maxAddressLineIndex) {
-                    sb.append(address.getAddressLine(i)).append(", ")
-                }
-                sb.append(address.locality).append(", ")
-                sb.append(address.postalCode).append(", ")
-                sb.append(address.countryName)
-                return sb.toString()
-            }
-
-            return "Could not locate."
-        }
-
         override fun getItemCount() = places.count()
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.titleTextView
+        val user: TextView = view.userTextView
         val description: TextView = view.descriptionTextView
         val location: TextView = view.locationTextView
         val container: View = view

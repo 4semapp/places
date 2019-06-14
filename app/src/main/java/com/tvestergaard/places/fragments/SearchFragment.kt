@@ -23,6 +23,7 @@ import com.tvestergaard.places.transport.InPlace
 import kotlinx.android.synthetic.main.fragment_search_item.view.*
 import org.jetbrains.anko.*
 import com.tvestergaard.places.R.*
+import com.tvestergaard.places.reverseGeocode
 
 
 class SearchFragment : Fragment(), AnkoLogger {
@@ -49,7 +50,18 @@ class SearchFragment : Fragment(), AnkoLogger {
 
             override fun onQueryTextChange(p0: String?) = true
         })
+    }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        if (savedInstanceState != null) {
+            this.searchInput.setQuery(savedInstanceState.get("query") as String, true)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("query", this.searchInput.query.toString())
     }
 
     private fun searchFor(search: String) {
@@ -86,7 +98,7 @@ class SearchFragment : Fragment(), AnkoLogger {
                 with(holder) {
                     val place = items[position]
                     title.text = place.title
-                    location.text = reverseGeocode(place.latitude.toDouble(), place.longitude.toDouble())
+                    location.text = context.reverseGeocode(place.latitude.toDouble(), place.longitude.toDouble())
                     poster.text = place.user.name
                     thumbnail.glide(place.pictures[0].thumbName)
                     container.setOnClickListener { this@SearchResultsAdapter.showDetail(place) }
@@ -98,24 +110,6 @@ class SearchFragment : Fragment(), AnkoLogger {
             val intent = Intent(context, SearchDetailActivity::class.java)
             intent.putExtra("place", place)
             context.startActivity(intent)
-        }
-
-        private fun reverseGeocode(latitude: Double, longitude: Double): String {
-            val geoCoder = Geocoder(context)
-            val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
-            if (addresses != null && addresses.size > 0) {
-                val address = addresses[0]
-                val sb = StringBuilder()
-                for (i in 0 until address.maxAddressLineIndex) {
-                    sb.append(address.getAddressLine(i)).append(", ")
-                }
-                sb.append(address.locality).append(", ")
-                sb.append(address.postalCode).append(", ")
-                sb.append(address.countryName)
-                return sb.toString()
-            }
-
-            return "Could not locate."
         }
     }
 
