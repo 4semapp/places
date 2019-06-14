@@ -12,7 +12,8 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:queryHint="@string/search_input_placeholder"
-            android:inputType="textShortMessage"/>
+            android:inputType="textShortMessage"
+            android:imeOptions="flagNoExtractUi"/> <!-- dont use full-screen keyboard -->
     <android.support.v7.widget.RecyclerView
             android:id="@+id/searchResults"
             android:layout_width="match_parent"
