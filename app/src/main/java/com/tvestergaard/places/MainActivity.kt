@@ -11,7 +11,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.tvestergaard.places.fragments.*
-import com.tvestergaard.places.fragments.AuthenticationFragment.Companion.authenticationRequestCode
 import com.tvestergaard.places.transport.BackendCommunicator
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.AnkoLogger
@@ -21,10 +20,11 @@ import java.lang.RuntimeException
 
 class MainActivity : AppCompatActivity(), AnkoLogger {
 
-    private var currentNavigationFragment = DEFAULT_FRAGMENT
+    private var currentFragmentId = DEFAULT_FRAGMENT
     private var currentFragment: Fragment? = null
-    public var account: AuthenticatedUser? = null
-    public lateinit var googleAuthClient: GoogleSignInClient
+    private var fragmentBundles = HashMap<Int, Bundle?>()
+    var account: AuthenticatedUser? = null
+    lateinit var googleAuthClient: GoogleSignInClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,29 +39,27 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
 
         if (savedInstanceState != null) {
             account = savedInstanceState.getSerializable("account") as AuthenticatedUser?
+            fragmentBundles = savedInstanceState.getSerializable("fragmentBundles") as HashMap<Int, Bundle?>
+            currentFragmentId = savedInstanceState.getInt(CURRENT_NAVIGATION_BUNDLE_KEY, DEFAULT_FRAGMENT)
         }
 
-        currentNavigationFragment = getStartingFragment(savedInstanceState)
-        show(currentNavigationFragment)
+        if (account == null) {
+            switchFragment(AUTHENTICATION_FRAGMENT, createFragmentFromId(AUTHENTICATION_FRAGMENT))
+            return
+        }
+
+        switchFragment(currentFragmentId, createFragmentFromId(currentFragmentId))
     }
 
-    private fun getStartingFragment(savedInstanceState: Bundle?): Int {
-
-        if (account == null)
-            return AUTHENTICATION_FRAGMENT
-
-        if (savedInstanceState != null)
-            return savedInstanceState.getInt(CURRENT_NAVIGATION_BUNDLE_KEY, DEFAULT_FRAGMENT)
-
-        return DEFAULT_FRAGMENT
-    }
-
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState!!.putSerializable(CURRENT_NAVIGATION_BUNDLE_KEY, currentNavigationFragment)
         outState.putSerializable("account", account)
-        if (currentFragment != null) {
-            supportFragmentManager.putFragment(outState, "currentFragment", currentFragment!!)
+        outState.putSerializable(CURRENT_NAVIGATION_BUNDLE_KEY, currentFragmentId)
+        if (!isFinishing) {
+            val fragmentBundle = Bundle()
+            currentFragment?.onSaveInstanceState(fragmentBundle)
+            fragmentBundles[currentFragmentId] = fragmentBundle
+            outState.putSerializable("fragmentBundles", fragmentBundles)
         }
     }
 
@@ -69,7 +67,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         this.account = user
         BackendCommunicator.authenticatedUser = user
         toast("Welcome back ${user.name}")
-        show(DEFAULT_FRAGMENT)
+        switchFragment(DEFAULT_FRAGMENT, createFragmentFromId(DEFAULT_FRAGMENT))
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -89,20 +87,25 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         }
     }
 
-    private fun getFragmentFromId(id: Int) = when (id) {
-        0 -> AuthenticationFragment.newInstance()
-        1 -> HomeFragment.newInstance()
-        2 -> CameraFragment.newInstance()
-        3 -> SearchFragment.newInstance()
-        4 -> ContributeFragment.newInstance()
-        5 -> ProfileFragment.newInstance()
-        else -> throw RuntimeException("unhandled fragment type $id.")
+    private fun createFragmentFromId(id: Int): Fragment {
+
+        val bundle = fragmentBundles.getOrDefault(id, Bundle())
+
+        return when (id) {
+            0 -> AuthenticationFragment.newInstance(bundle)
+            1 -> HomeFragment.newInstance(bundle)
+            2 -> CameraFragment.newInstance(bundle)
+            3 -> SearchFragment.newInstance(bundle)
+            4 -> ContributeFragment.newInstance(bundle)
+            5 -> ProfileFragment.newInstance(bundle)
+            else -> throw RuntimeException("unhandled fragment type $id.")
+        }
     }
 
     private fun createNavigationListener(): BottomNavigationView.OnNavigationItemSelectedListener {
         return BottomNavigationView.OnNavigationItemSelectedListener { item ->
             val navigationId = getPositionalItem(item.itemId)
-            show(navigationId)
+            switchFragment(navigationId, createFragmentFromId(navigationId))
             true
         }
     }
@@ -118,35 +121,32 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         }
     }
 
-    private fun show(id: Int) {
+    private fun switchFragment(id: Int, fragment: Fragment) {
 
         if (id == AUTHENTICATION_FRAGMENT)
             navigation.visibility = View.GONE
         else
             navigation.visibility = View.VISIBLE
-
-        val fragment = getFragmentFromId(id)
         val transaction = supportFragmentManager.beginTransaction()
 
-        if (currentNavigationFragment < id)
+        if (currentFragmentId < id)
             transaction.setCustomAnimations(
                 R.anim.slide_in_left,
                 R.anim.slide_out_left
             )
-        if (currentNavigationFragment > id)
+        if (currentFragmentId > id)
             transaction.setCustomAnimations(
                 R.anim.slide_in_right,
                 R.anim.slide_out_right
             )
 
-
-        currentFragment = fragment
-
         transaction
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).replace(R.id.fragmentContainer, fragment)
             .commitAllowingStateLoss()
 
-        currentNavigationFragment = id
+
+        currentFragment = fragment
+        currentFragmentId = id
     }
 
     fun signOut() {
@@ -157,6 +157,6 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
     companion object {
         const val AUTHENTICATION_FRAGMENT = 0
         const val DEFAULT_FRAGMENT = 1
-        const val CURRENT_NAVIGATION_BUNDLE_KEY = "currentNavigationFragment"
+        const val CURRENT_NAVIGATION_BUNDLE_KEY = "currentFragmentId"
     }
 }

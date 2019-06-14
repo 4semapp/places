@@ -135,9 +135,6 @@ class GalleryFragment : Fragment(), GalleryAdapterListener {
                             holder.imageView.alpha = 1.0f
                         } else {
                             item.selected = true
-                            //holder.imageView.background = resources.getDrawable(R.drawable.back, null)
-                            //ResourcesCompat.getDrawable(resources, R.drawable.back, null)
-                            // ImageViewCompat.setImageTintList(this.image, ColorStateList.valueOf(Color.RED))
                             holder.imageView.alpha = 0.5f
                         }
                     }

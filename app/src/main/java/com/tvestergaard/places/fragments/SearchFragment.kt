@@ -25,6 +25,7 @@ import com.tvestergaard.places.transport.InPlace
 import kotlinx.android.synthetic.main.fragment_search_item.view.*
 import org.jetbrains.anko.*
 import com.tvestergaard.places.R.*
+import com.tvestergaard.places.reverseGeocode
 
 
 class SearchFragment : Fragment(), AnkoLogger {
@@ -32,35 +33,49 @@ class SearchFragment : Fragment(), AnkoLogger {
     private val backendCommunicator = BackendCommunicator()
     private val results = mutableListOf<InPlace>()
     private lateinit var adapter: SearchResultsAdapter
+    private var lastSearch: String? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(layout.fragment_search, container, false)
 
     override fun onStart() {
         super.onStart()
-
         adapter = SearchResultsAdapter(results, activity)
-        searchResults.layoutManager = getLayoutManager()
+        val orientation = resources.configuration.orientation
+        searchResults.layoutManager = GridLayoutManager(
+            context, when (orientation) {
+                Configuration.ORIENTATION_LANDSCAPE -> 2
+                else -> 1
+            }
+        )
         searchResults.adapter = adapter
 
         searchInput.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(search: String?): Boolean {
                 this@SearchFragment.searchFor(search ?: "")
+                this@SearchFragment.lastSearch = search
                 return true
             }
 
             override fun onQueryTextChange(p0: String?) = true
         })
 
+        if (!arguments.isEmpty) {
+            val query = arguments.get("query")
+            if (query != null) {
+                this.lastSearch = query as String
+                this.searchInput.setQuery(lastSearch, false)
+                this.results.addAll(arguments.get("results") as Array<InPlace>)
+                this.adapter.notifyDataSetChanged()
+            }
+        }
     }
 
-    private fun getLayoutManager(): LinearLayoutManager {
-        return GridLayoutManager(
-            context, when (resources.configuration.orientation) {
-                Configuration.ORIENTATION_LANDSCAPE -> 2
-                else -> 1
-            }
-        )
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        info("count=${results.size}")
+        outState.putString("query", lastSearch)
+        outState.putSerializable("results", this.results.toTypedArray())
     }
 
     private fun searchFor(search: String) {
@@ -97,7 +112,7 @@ class SearchFragment : Fragment(), AnkoLogger {
                 with(holder) {
                     val place = items[position]
                     title.text = place.title
-                    location.text = reverseGeocode(place.latitude.toDouble(), place.longitude.toDouble())
+                    location.text = context.reverseGeocode(place.latitude.toDouble(), place.longitude.toDouble())
                     poster.text = place.user.name
                     thumbnail.glide(place.pictures[0].thumbName)
                     container.setOnClickListener { this@SearchResultsAdapter.showDetail(place) }
@@ -109,24 +124,6 @@ class SearchFragment : Fragment(), AnkoLogger {
             val intent = Intent(context, SearchDetailActivity::class.java)
             intent.putExtra("place", place)
             context.startActivity(intent)
-        }
-
-        private fun reverseGeocode(latitude: Double, longitude: Double): String {
-            val geoCoder = Geocoder(context)
-            val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
-            if (addresses != null && addresses.size > 0) {
-                val address = addresses[0]
-                val sb = StringBuilder()
-                for (i in 0 until address.maxAddressLineIndex) {
-                    sb.append(address.getAddressLine(i)).append(", ")
-                }
-                sb.append(address.locality).append(", ")
-                sb.append(address.postalCode).append(", ")
-                sb.append(address.countryName)
-                return sb.toString()
-            }
-
-            return "Could not locate."
         }
     }
 
@@ -140,9 +137,9 @@ class SearchFragment : Fragment(), AnkoLogger {
 
     companion object {
         @JvmStatic
-        fun newInstance() =
+        fun newInstance(prevState: Bundle? = Bundle()) =
             SearchFragment().apply {
-                arguments = Bundle()
+                arguments = prevState
             }
     }
 }

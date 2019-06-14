@@ -48,9 +48,9 @@ class ProfileFragment : Fragment(), AnkoLogger {
 
     companion object {
         @JvmStatic
-        fun newInstance() =
+        fun newInstance(prevState: Bundle? = Bundle()) =
             ProfileFragment().apply {
-                arguments = Bundle()
+                arguments = prevState
             }
     }
 }

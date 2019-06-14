@@ -51,13 +51,14 @@ class BackendCommunicator {
 
     fun postPlace(OutPlace: OutPlace): OutPlace? {
         val response = post(
-            "$ROOT/places", data = com.tvestergaard.places.fragments.gson.toJson(OutPlace), headers = mapOf(
+            "$ROOT/places", data = gson.toJson(OutPlace), headers = mapOf(
                 "Content-Type" to "application/json",
                 "Authorization" to "Bearer " + authenticatedUser!!.token
             )
         )
         if (!ok(response.statusCode))
             return null
+
         return gson.fromJson(response.text, OutPlace::class.java)
     }
 
@@ -72,7 +73,7 @@ class BackendCommunicator {
     }
 
     companion object {
-        private const val ROOT = "http://03e779d7.ngrok.io"
+        private const val ROOT = "http://801498a9.ngrok.io"
         var authenticatedUser: AuthenticatedUser? = null
         const val IMG_ROOT = "$ROOT/images"
     }

@@ -158,7 +158,7 @@ class CameraFragment : Fragment(), AnkoLogger {
 
     private fun thumbnail(file: File) {
         val inputBitmap = BitmapFactory.decodeFile(file.absolutePath)
-        val outputBitmap = ThumbnailUtils.extractThumbnail(inputBitmap, 500, 500)
+        val outputBitmap = ThumbnailUtils.extractThumbnail(inputBitmap, 550, 550)
         val outputFile = File(file.parentFile.absolutePath + "/thumb_" + file.name)
         FileOutputStream(outputFile).use { out ->
             outputBitmap.compress(Bitmap.CompressFormat.JPEG, 85, out)
@@ -174,9 +174,9 @@ class CameraFragment : Fragment(), AnkoLogger {
         const val fileProviderName = "${BuildConfig.APPLICATION_ID}.provider"
 
         @JvmStatic
-        fun newInstance() =
+        fun newInstance(prevState: Bundle? = Bundle()) =
             CameraFragment().apply {
-                arguments = Bundle()
+                arguments = prevState
             }
     }
 }
