@@ -144,6 +144,12 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).replace(R.id.fragmentContainer, fragment)
             .commitAllowingStateLoss()
 
+        // Save instance state when navigating
+        if (currentFragment != null) {
+            val bundle = Bundle()
+            currentFragment!!.onSaveInstanceState(bundle)
+            fragmentBundles[currentFragmentId] = bundle
+        }
 
         currentFragment = fragment
         currentFragmentId = id
