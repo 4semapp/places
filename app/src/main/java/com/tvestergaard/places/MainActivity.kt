@@ -1,5 +1,6 @@
 package com.tvestergaard.places
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
@@ -51,8 +52,9 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         switchFragment(currentFragmentId, createFragmentFromId(currentFragmentId))
     }
 
+    @SuppressLint("MissingSuperCall")
     override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
+        // super.onSaveInstanceState(outState)
         outState.putSerializable("account", account)
         outState.putSerializable(CURRENT_NAVIGATION_BUNDLE_KEY, currentFragmentId)
         if (!isFinishing) {
