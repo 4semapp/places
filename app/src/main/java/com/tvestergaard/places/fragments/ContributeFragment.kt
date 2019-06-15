@@ -3,7 +3,9 @@ package com.tvestergaard.places.fragments
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Activity.RESULT_OK
+import android.arch.lifecycle.Lifecycle
 import android.content.Context
 import android.content.Intent
 import android.location.Location
@@ -16,28 +18,29 @@ import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.gson.GsonBuilder
 import com.tvestergaard.places.*
 import com.tvestergaard.places.transport.BackendCommunicator
 import com.tvestergaard.places.transport.OutPicture
 import com.tvestergaard.places.transport.OutPlace
 import kotlinx.android.synthetic.main.fragment_contribute.*
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.experimental.withTimeout
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.info
 import org.jetbrains.anko.support.v4.toast
 import java.io.File
-
-val gson = GsonBuilder().create()
+import java.util.concurrent.TimeUnit
 
 class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationListener {
 
     private var locationManager: LocationManager? = null
-    private var images = arrayOf<DiskImage>()
+    private var images = mutableListOf<DiskImage>()
     private val permissionRequestCode = 0
     private var requiredPermissions = arrayOf(READ_EXTERNAL_STORAGE, ACCESS_FINE_LOCATION)
-    private val onResumeOperations = mutableListOf<() -> Unit>()
+    private var onResumeOperations = mutableListOf<() -> Unit>()
 
     // used to lock the manualLocation property
     // when true the manualLocation value will not be set to true, when the user edits the longitude or latitude
@@ -51,6 +54,7 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        info("..:created:${System.identityHashCode(this)}")
         return inflater.inflate(R.layout.fragment_contribute, container, false)
     }
 
@@ -61,7 +65,6 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
 
     override fun onStart() {
         super.onStart()
-        checkPermissions()
 
         checkPermissions()
         choosePicturesButton.setOnClickListener {
@@ -69,20 +72,41 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
             startActivityForResult(intent, selectPictureRequestCode)
         }
 
-        if (images.isEmpty()) {
-            submitPlaceButton.isEnabled = false
-            submitPlaceButton.backgroundColor = 0xFFAAAAAA.toInt()
-        }
-
         submitPlaceButton.setOnClickListener { submitPlace() }
         latitudeInput.addTextChangedListener(Watcher())
         longitudeInput.addTextChangedListener(Watcher())
 
-        onResumeOperations.forEach {
-            it.invoke()
+        if (!arguments.isEmpty) {
+            info("..: arguments=${images.size}")
+            val title = arguments.getString("title")
+            titleInput.setText(title)
+            images.clear()
+            images.addAll(arguments.get("images") as Array<DiskImage>)
+            updateSubmitButtonState(images.isNotEmpty())
         }
 
+        info("..:number of resumes:${onResumeOperations.size}")
+        onResumeOperations.forEach { it.invoke() }
         onResumeOperations.clear()
+        updateSubmitButtonState(images.isNotEmpty())
+    }
+
+    private fun updateSubmitButtonState(enable: Boolean) {
+        info("..:enable=$enable")
+        if (enable) {
+            submitPlaceButton.isEnabled = true
+            submitPlaceButton.backgroundColor = 0xFFFF5500.toInt()
+        } else {
+            submitPlaceButton.isEnabled = false
+            submitPlaceButton.backgroundColor = 0xFFAAAAAA.toInt()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("title", titleInput.text.toString())
+        outState.putSerializable("images", this.images.toTypedArray())
+        outState.putSerializable("resumes", this.onResumeOperations.toTypedArray())
     }
 
     private inner class Watcher : TextWatcher, AnkoLogger {
@@ -166,17 +190,36 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
+        info("..:resultCode=${resultCode}")
+        info("..:data=${data}")
+
         when (requestCode) {
             selectPictureRequestCode ->
                 if (resultCode == RESULT_OK && data != null) {
-                    images = data.extras["selected"] as Array<DiskImage>
                     this.manualLocation = true
-                    onResumeOperations.add {
-                        if (images.isNotEmpty()) {
-                            submitPlaceButton.isEnabled = true
-                            submitPlaceButton.backgroundColor = 0xFFFF5500.toInt() // orange
+                    info("..:added resume op")
+                    info("..:state=${this.getLifecycle().getCurrentState()}")
+//                    if (this.getLifecycle().getCurrentState() == Lifecycle.State.CREATED) {
+//                        images = (data.extras["selected"] as Array<DiskImage>).toMutableList()
+//                        info("..: result=${images.size}")
+//                        updateSubmitButtonState(images.isNotEmpty())
+//                    } else {
+//                        onResumeOperations.add {
+                    //async {
+                    runBlocking {
+                        withTimeout(100, TimeUnit.MILLISECONDS) {
+                            images = (data.extras["selected"] as Array<DiskImage>).toMutableList()
+                            info("..: result=${images.size}")
+                            updateSubmitButtonState(images.isNotEmpty())
                         }
                     }
+                    //}
+//                    images = (data.extras["selected"] as Array<DiskImage>).toMutableList()
+//                    info("..: result=${images.size}")
+//                    updateSubmitButtonState(images.isNotEmpty())
+//                        }
+//                    }
                 }
         }
     }
