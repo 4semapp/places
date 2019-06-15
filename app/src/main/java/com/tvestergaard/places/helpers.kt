@@ -1,6 +1,5 @@
 package com.tvestergaard.places
 
-import android.app.Activity
 import android.content.Context
 import android.location.Geocoder
 import android.os.Handler
@@ -8,6 +7,7 @@ import android.os.Looper
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.tvestergaard.places.transport.BackendCommunicator
+import kotlin.math.round
 
 // https://githusb.com/WindSekirun/RichUtilsKt/blob/master/RichUtils/src/main/java/pyxis/uzuki/live/richutilskt/utils/RThread.kt
 fun runOnUiThread(action: () -> Unit) = Handler(Looper.getMainLooper()).post(Runnable(action))
@@ -31,4 +31,10 @@ fun Context.reverseGeocode(latitude: Double, longitude: Double): String {
     }
 
     return "Could not locate..."
+}
+
+fun Double.round(decimals: Int): Double {
+    var multiplier = 1.0
+    repeat(decimals) { multiplier *= 10 }
+    return round(this * multiplier) / multiplier
 }

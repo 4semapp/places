@@ -25,19 +25,17 @@ import kotlinx.android.synthetic.main.fragment_contribute.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.info
 import org.jetbrains.anko.support.v4.toast
 import java.io.File
 
-val gson = GsonBuilder().create()
+val onResumeOperations = mutableListOf<(ContributeFragment) -> Unit>()
 
 class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationListener {
 
     private var locationManager: LocationManager? = null
-    private var images = arrayOf<DiskImage>()
+    private var images = mutableListOf<DiskImage>()
     private val permissionRequestCode = 0
     private var requiredPermissions = arrayOf(READ_EXTERNAL_STORAGE, ACCESS_FINE_LOCATION)
-    private val onResumeOperations = mutableListOf<() -> Unit>()
 
     // used to lock the manualLocation property
     // when true the manualLocation value will not be set to true, when the user edits the longitude or latitude
@@ -78,11 +76,45 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
         latitudeInput.addTextChangedListener(Watcher())
         longitudeInput.addTextChangedListener(Watcher())
 
-        onResumeOperations.forEach {
-            it.invoke()
+        if (!arguments.isEmpty) {
+            val title = arguments.getString("title")
+            titleInput.setText(title)
+            images.clear()
+            images.addAll(arguments.get("images") as Array<DiskImage>)
+            updateSubmitButtonState()
         }
 
-        onResumeOperations.clear()
+        if (onResumeOperations.isNotEmpty()) {
+            onResumeOperations.forEach { it.invoke(this) }
+            onResumeOperations.clear()
+            updateSubmitButtonState()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (onResumeOperations.isNotEmpty()) {
+            onResumeOperations.forEach { it.invoke(this) }
+            onResumeOperations.clear()
+            updateSubmitButtonState()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("title", titleInput.text.toString())
+        outState.putSerializable("images", this.images.toTypedArray())
+    }
+
+    private fun updateSubmitButtonState() {
+        choosePicturesButton.text = "Choose Pictures (" + images.size + ")"
+        if (images.isNotEmpty()) {
+            submitPlaceButton.isEnabled = true
+            submitPlaceButton.backgroundColor = 0xFFFF5500.toInt()
+        } else {
+            submitPlaceButton.isEnabled = false
+            submitPlaceButton.backgroundColor = 0xFFAAAAAA.toInt()
+        }
     }
 
     private inner class Watcher : TextWatcher, AnkoLogger {
@@ -159,8 +191,8 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
 
     private fun updateLocation(location: Location) {
         manualLocationLock = true
-        longitudeInput.setText(location.longitude.toString())
-        latitudeInput.setText(location.latitude.toString())
+        longitudeInput.setText(location.longitude.round(4).toString())
+        latitudeInput.setText(location.latitude.round(4).toString())
         manualLocationLock = false
     }
 
@@ -169,27 +201,12 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
         when (requestCode) {
             selectPictureRequestCode ->
                 if (resultCode == RESULT_OK && data != null) {
-                    images = data.extras["selected"] as Array<DiskImage>
                     this.manualLocation = true
-                    onResumeOperations.add {
-                        if (images.isNotEmpty()) {
-                            submitPlaceButton.isEnabled = true
-                            submitPlaceButton.backgroundColor = 0xFFFF5500.toInt() // orange
-                        }
+                    onResumeOperations.add { self ->
+                        self.images = (data.extras["selected"] as Array<DiskImage>).toMutableList()
                     }
                 }
         }
-    }
-
-
-    companion object {
-        @JvmStatic
-        fun newInstance(prevState: Bundle? = Bundle()) =
-            ContributeFragment().apply {
-                arguments = prevState
-            }
-
-        const val selectPictureRequestCode = 2
     }
 
     /**
@@ -216,5 +233,15 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
     override fun onDestroy() {
         locationManager?.removeUpdates(this)
         super.onDestroy()
+    }
+
+    companion object {
+        @JvmStatic
+        fun newInstance(prevState: Bundle? = Bundle()) =
+            ContributeFragment().apply {
+                arguments = prevState
+            }
+
+        const val selectPictureRequestCode = 2
     }
 }

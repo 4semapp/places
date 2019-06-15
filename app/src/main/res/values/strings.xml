@@ -17,7 +17,7 @@
 
     <!-- Contribute -->
     <string name="contribute_header">Create Place</string>
-    <string name="contribute_choose_picture_button_text">Choose Pictures</string>
+    <string name="contribute_choose_picture_button_text">Choose Pictures (0)</string>
     <string name="contribute_input_title_label">Title</string>
     <string name="contribute_input_description_label">Description</string>
     <string name="contribute_input_longitude_label">Longitude</string>
