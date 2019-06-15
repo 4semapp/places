@@ -108,6 +108,8 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
 
     private fun updateSubmitButtonState() {
         choosePicturesButton.text = "Choose Pictures (" + images.size + ")"
+        choosePicturesButton.isEnabled = true
+        choosePicturesButton.backgroundColor = 0xFFFF5500.toInt()
         if (images.isNotEmpty()) {
             submitPlaceButton.isEnabled = true
             submitPlaceButton.backgroundColor = 0xFFFF5500.toInt()
@@ -158,8 +160,10 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
             runOnUiThread {
                 if (response == null)
                     toast("The place could not be created.")
-                else
+                else {
                     toast("The place was successfully created.")
+                    this@ContributeFragment.reset()
+                }
             }
         }
     }
@@ -228,6 +232,12 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
                     startLocationListener()
             }
         }
+    }
+
+    private fun reset() {
+        titleInput.setText("")
+        images.clear()
+        updateSubmitButtonState()
     }
 
     override fun onDestroy() {
