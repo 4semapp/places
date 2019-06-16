@@ -102,7 +102,7 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString("title", titleInput.text.toString())
+        outState.putString("title", titleInput?.text?.toString())
         outState.putSerializable("images", this.images.toTypedArray())
     }
 
