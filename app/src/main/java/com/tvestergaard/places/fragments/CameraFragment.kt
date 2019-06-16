@@ -90,7 +90,6 @@ class CameraFragment : Fragment(), AnkoLogger {
             .commitAllowingStateLoss()
     }
 
-
     private fun dispatchTakePictureIntent() {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         val file = getOutputMediaFile() ?: return
@@ -125,13 +124,17 @@ class CameraFragment : Fragment(), AnkoLogger {
         FileProvider.getUriForFile(activity, fileProviderName, file)
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == requestImageCaptureCode && resultCode == RESULT_OK) {
-            toast(string.pictureTakenSuccess)
-            if (takenPicture != null) {
-                correctRotation(takenPicture!!)
-                thumbnail(takenPicture!!)
-                takenPicture = null
+        if (requestCode == requestImageCaptureCode) {
+            if (resultCode == RESULT_OK) {
+                toast(getString(string.camera_picture_taken_success))
+                if (takenPicture != null) {
+                    correctRotation(takenPicture!!)
+                    thumbnail(takenPicture!!)
+                    takenPicture = null
+                }
             }
+        } else {
+            toast(getString(string.camera_picture_taken_failure))
         }
     }
 

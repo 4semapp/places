@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         super.onCreate(savedInstanceState)
         googleAuthClient = GoogleSignIn.getClient(
             this, GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.google_authentication_key))
+                .requestIdToken(getString(R.string.google_authentication_app_id))
                 .requestEmail()
                 .build()
         )

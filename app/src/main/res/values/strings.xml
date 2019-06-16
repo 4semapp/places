@@ -2,6 +2,10 @@
     <string name="app_name">Places</string>
     <string name="server_client_id">361668683148-f4fe5kh2o5h530f60q9v15pn67p858bh.apps.googleusercontent.com</string>
     <string name="welcome_back_name">Welcome back %1$s</string>
+    <string name="authentication_error">You could not be authenticated.</string>
+    <string name="google_authentication_app_id">361668683148-casfe6p1qcgpf8s5aa2cg2tr6qvstdg0.apps.googleusercontent.com
+    </string>
+    <string name="no_pictures_selected_error">You must select a picture to continue.</string>
 
     <!-- Main navigation -->
     <string name="title_home">Home</string>
@@ -9,12 +13,15 @@
     <string name="title_search">Search</string>
     <string name="title_camera">Camera</string>
     <string name="title_profile">Profile</string>
-    <string name="title_activity_master_detail">MasterDetail</string>
 
     <!-- Camera -->
-    <string name="authenticationError">You could not be authenticated.</string>
-    <string name="pictureTakenSuccess">The picture was successfully saved.</string>
+    <string name="camera_picture_taken_success">The picture was successfully saved.</string>
+    <string name="camera_picture_taken_failure">The picture could not be taken or saved.</string>
     <string name="camera_take_picture_button_text">Take Picture</string>
+    <string name="camera_delete_success">The image was successfully deleted.</string>
+    <string name="camera_delete_error">The image could not be deleted.</string>
+    <string name="camera_delete_dialog_title">Delete image</string>
+    <string name="camera_delete_dialog_subtitle">Are you sure you want to delete this image?</string>
 
     <!-- Contribute -->
     <string name="contribute_header">Create Place</string>
@@ -26,9 +33,9 @@
     <string name="contribute_post_button_text">Post Place</string>
     <string name="contribute_complete_image_selection_text">Complete Selection</string>
 
-    <string name="choose_pictures_button_size">Choose Pictures (%1$d)</string>
-    <string name="place_created_error">The place could not be created.</string>
-    <string name="place_created_success">The place was successfully created.</string>
+    <string name="contribute_choose_pictures_button_size">Choose Pictures (%1$d)</string>
+    <string name="contribute_place_created_error">The place could not be created.</string>
+    <string name="contribute_place_created_success">The place was successfully created.</string>
 
     <!-- Search -->
     <string name="search_input_placeholder">Search by title</string>
@@ -42,7 +49,5 @@
     <!-- Debug -->
     <string name="title_item_list">Items</string>
     <string name="title_item_detail">Item Detail</string>
-    <string name="no_pictures_selected_error">Please select some pictures first.</string>
-    <string name="google_authentication_key">361668683148-casfe6p1qcgpf8s5aa2cg2tr6qvstdg0.apps.googleusercontent.com
-    </string>
+    <string name="title_activity_master_detail">MasterDetail</string>
 </resources>

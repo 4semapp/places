@@ -77,16 +77,19 @@ class GalleryFragment : Fragment(), GalleryAdapterListener {
     }
 
     override fun onLongClick(item: DiskImage) {
-        alert("Are you sure you want to delete this image?", "Delete DiskImage") {
+        alert(
+            getString(R.string.camera_delete_dialog_subtitle),
+            getString(R.string.camera_delete_dialog_title)
+        ) {
             yesButton {
                 try {
                     item.file.delete()
                     File(item.file.parent, item.file.name.removePrefix("thumb_")).delete()
                     diskImages.remove(item)
                     adapter.notifyDataSetChanged()
-                    toast("The image war successfully been deleted.")
+                    toast(getString(R.string.camera_delete_success))
                 } catch (e: IOException) {
-                    toast("The image could not be deleted.")
+                    toast(getString(R.string.camera_delete_error))
                 }
             }
             noButton {}

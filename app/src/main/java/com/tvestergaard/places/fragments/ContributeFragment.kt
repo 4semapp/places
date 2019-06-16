@@ -17,7 +17,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.tvestergaard.places.*
-import com.tvestergaard.places.R.string.choose_pictures_button_size
+import com.tvestergaard.places.R.string.contribute_choose_pictures_button_size
 import com.tvestergaard.places.transport.BackendCommunicator
 import com.tvestergaard.places.transport.OutPicture
 import com.tvestergaard.places.transport.OutPlace
@@ -93,7 +93,7 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
     }
 
     private fun updateButtons() {
-        choosePicturesButton.text = getString(choose_pictures_button_size, images.size)
+        choosePicturesButton.text = getString(contribute_choose_pictures_button_size, images.size)
         enableButton(choosePicturesButton)
         if (images.isNotEmpty())
             enableButton(submitPlaceButton)
@@ -137,9 +137,9 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
             val response = BackendCommunicator().postPlace(toCreate)
             runOnUiThread {
                 if (response == null)
-                    toast(getString(R.string.place_created_error))
+                    toast(getString(R.string.contribute_place_created_error))
                 else {
-                    toast(getString(R.string.place_created_success))
+                    toast(getString(R.string.contribute_place_created_success))
                     this@ContributeFragment.reset()
                 }
             }
