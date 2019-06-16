@@ -42,6 +42,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
             account = savedInstanceState.getSerializable("account") as AuthenticatedUser?
             fragmentBundles = savedInstanceState.getSerializable("fragmentBundles") as HashMap<Int, Bundle?>
             currentFragmentId = savedInstanceState.getInt(CURRENT_NAVIGATION_BUNDLE_KEY, DEFAULT_FRAGMENT)
+            navigation.selectedItemId = getNavigationItem(currentFragmentId)
         }
 
         if (account == null) {
@@ -119,6 +120,17 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
             R.id.navigation_search -> 3
             R.id.navigation_contribute -> 4
             R.id.navigation_profile -> 5
+            else -> DEFAULT_FRAGMENT
+        }
+    }
+
+    private fun getNavigationItem(item: Int): Int {
+        return when (item) {
+            1 -> R.id.navigation_home
+            2 -> R.id.navigation_camera
+            3 -> R.id.navigation_search
+            4 -> R.id.navigation_contribute
+            5 -> R.id.navigation_profile
             else -> DEFAULT_FRAGMENT
         }
     }
