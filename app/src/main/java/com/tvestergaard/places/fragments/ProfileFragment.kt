@@ -36,7 +36,9 @@ class ProfileFragment : Fragment(), AnkoLogger {
             doAsync {
                 val count = backend.countPosts(main.account!!)
                 runOnUiThread {
-                    numberOfPostsText.text = count.toString()
+                    if (numberOfPostsText != null) {
+                        numberOfPostsText.text = count.toString()
+                    }
                 }
             }
         }
