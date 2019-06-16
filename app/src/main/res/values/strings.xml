@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Places</string>
     <string name="server_client_id">361668683148-f4fe5kh2o5h530f60q9v15pn67p858bh.apps.googleusercontent.com</string>
+    <string name="welcome_back_name">Welcome back %1$s</string>
 
     <!-- Main navigation -->
     <string name="title_home">Home</string>
@@ -25,6 +26,10 @@
     <string name="contribute_post_button_text">Post Place</string>
     <string name="contribute_complete_image_selection_text">Complete Selection</string>
 
+    <string name="choose_pictures_button_size">Choose Pictures (%1$d)</string>
+    <string name="place_created_error">The place could not be created.</string>
+    <string name="place_created_success">The place was successfully created.</string>
+
     <!-- Search -->
     <string name="search_input_placeholder">Search by title</string>
 
@@ -37,4 +42,7 @@
     <!-- Debug -->
     <string name="title_item_list">Items</string>
     <string name="title_item_detail">Item Detail</string>
+    <string name="no_pictures_selected_error">Please select some pictures first.</string>
+    <string name="google_authentication_key">361668683148-casfe6p1qcgpf8s5aa2cg2tr6qvstdg0.apps.googleusercontent.com
+    </string>
 </resources>

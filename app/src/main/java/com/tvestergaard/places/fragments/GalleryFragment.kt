@@ -26,7 +26,7 @@ class GalleryFragment : Fragment(), GalleryAdapterListener {
     private lateinit var adapter: GalleryAdapter
     private val diskImages: MutableList<DiskImage> = mutableListOf()
     private var selectMode: Boolean = false
-    val selected = mutableListOf<DiskImage>()
+    val selected = arrayListOf<DiskImage>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -44,9 +44,7 @@ class GalleryFragment : Fragment(), GalleryAdapterListener {
         }
 
         if (imageDirectory != null)
-            readThumbnails(imageDirectory!!)
-                .toTypedArray()
-                .forEach(this::addImage)
+            readThumbnails(imageDirectory!!).forEach(this::addImage)
 
         return view
     }

@@ -16,7 +16,6 @@ import com.tvestergaard.places.transport.BackendCommunicator
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.toast
-import java.lang.RuntimeException
 
 
 class MainActivity : AppCompatActivity(), AnkoLogger {
@@ -31,7 +30,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         super.onCreate(savedInstanceState)
         googleAuthClient = GoogleSignIn.getClient(
             this, GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("361668683148-casfe6p1qcgpf8s5aa2cg2tr6qvstdg0.apps.googleusercontent.com")
+                .requestIdToken(getString(R.string.google_authentication_key))
                 .requestEmail()
                 .build()
         )
@@ -39,10 +38,10 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         navigation.setOnNavigationItemSelectedListener(createNavigationListener())
 
         if (savedInstanceState != null) {
-            account = savedInstanceState.getSerializable("account") as AuthenticatedUser?
-            fragmentBundles = savedInstanceState.getSerializable("fragmentBundles") as HashMap<Int, Bundle?>
+            account = savedInstanceState.getSerializable(ACCOUNT_BUNDLE_KEY) as AuthenticatedUser?
+            fragmentBundles = savedInstanceState.getSerializable(FRAGMENT_STATE_BUNDLE_KEY) as HashMap<Int, Bundle?>
             currentFragmentId = savedInstanceState.getInt(CURRENT_NAVIGATION_BUNDLE_KEY, DEFAULT_FRAGMENT)
-            navigation.selectedItemId = getNavigationItem(currentFragmentId)
+            navigation.selectedItemId = getNavigationItemFromId(currentFragmentId)
         }
 
         if (account == null) {
@@ -55,21 +54,22 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
 
     @SuppressLint("MissingSuperCall")
     override fun onSaveInstanceState(outState: Bundle) {
-        // super.onSaveInstanceState(outState)
-        outState.putSerializable("account", account)
-        outState.putSerializable(CURRENT_NAVIGATION_BUNDLE_KEY, currentFragmentId)
+
+        outState.putSerializable(ACCOUNT_BUNDLE_KEY, account)
+        outState.putInt(CURRENT_NAVIGATION_BUNDLE_KEY, currentFragmentId)
+
         if (!isFinishing) {
             val fragmentBundle = Bundle()
             currentFragment?.onSaveInstanceState(fragmentBundle)
             fragmentBundles[currentFragmentId] = fragmentBundle
-            outState.putSerializable("fragmentBundles", fragmentBundles)
+            outState.putSerializable(FRAGMENT_STATE_BUNDLE_KEY, fragmentBundles)
         }
     }
 
     fun onAuthenticationSuccess(user: AuthenticatedUser) {
         this.account = user
         BackendCommunicator.authenticatedUser = user
-        toast("Welcome back ${user.name}")
+        toast(getString(R.string.welcome_back_name, user.name))
         switchFragment(DEFAULT_FRAGMENT, createFragmentFromId(DEFAULT_FRAGMENT))
     }
 
@@ -101,19 +101,19 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
             3 -> SearchFragment.newInstance(bundle)
             4 -> ContributeFragment.newInstance(bundle)
             5 -> ProfileFragment.newInstance(bundle)
-            else -> throw RuntimeException("unhandled fragment type $id.")
+            else -> HomeFragment.newInstance(bundle)
         }
     }
 
     private fun createNavigationListener(): BottomNavigationView.OnNavigationItemSelectedListener {
         return BottomNavigationView.OnNavigationItemSelectedListener { item ->
-            val navigationId = getPositionalItem(item.itemId)
+            val navigationId = getNavigationIdFromItem(item.itemId)
             switchFragment(navigationId, createFragmentFromId(navigationId))
             true
         }
     }
 
-    private fun getPositionalItem(item: Int): Int {
+    private fun getNavigationIdFromItem(item: Int): Int {
         return when (item) {
             R.id.navigation_home -> 1
             R.id.navigation_camera -> 2
@@ -124,23 +124,22 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         }
     }
 
-    private fun getNavigationItem(item: Int): Int {
+    private fun getNavigationItemFromId(item: Int): Int {
         return when (item) {
             1 -> R.id.navigation_home
             2 -> R.id.navigation_camera
             3 -> R.id.navigation_search
             4 -> R.id.navigation_contribute
             5 -> R.id.navigation_profile
-            else -> DEFAULT_FRAGMENT
+            else -> R.id.navigation_home // default is home
         }
     }
 
     private fun switchFragment(id: Int, fragment: Fragment) {
 
-        if (id == AUTHENTICATION_FRAGMENT)
-            navigation.visibility = View.GONE
-        else
-            navigation.visibility = View.VISIBLE
+        // hide the navigation bar, when we are on authentication page
+        navigation.visibility = if (id == AUTHENTICATION_FRAGMENT) View.GONE else View.VISIBLE
+
         val transaction = supportFragmentManager.beginTransaction()
 
         if (currentFragmentId < id)
@@ -178,5 +177,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         const val AUTHENTICATION_FRAGMENT = 0
         const val DEFAULT_FRAGMENT = 1
         const val CURRENT_NAVIGATION_BUNDLE_KEY = "currentFragmentId"
+        const val ACCOUNT_BUNDLE_KEY = "account"
+        const val FRAGMENT_STATE_BUNDLE_KEY = "fragmentBundles"
     }
 }

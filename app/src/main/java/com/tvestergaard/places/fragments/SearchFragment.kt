@@ -31,7 +31,7 @@ import com.tvestergaard.places.reverseGeocode
 class SearchFragment : Fragment(), AnkoLogger {
 
     private val backendCommunicator = BackendCommunicator()
-    private val results = mutableListOf<InPlace>()
+    private val results = arrayListOf<InPlace>()
     private lateinit var adapter: SearchResultsAdapter
     private var lastSearch: String? = null
 
@@ -61,21 +61,17 @@ class SearchFragment : Fragment(), AnkoLogger {
         })
 
         if (!arguments.isEmpty) {
-            val query = arguments.get("query")
-            if (query != null) {
-                this.lastSearch = query as String
-                this.searchInput.setQuery(lastSearch, false)
-                this.results.addAll(arguments.get("results") as Array<InPlace>)
-                this.adapter.notifyDataSetChanged()
-            }
+            this.lastSearch = arguments.getString(QUERY_BUNDLE_KEY) ?: ""
+            this.searchInput.setQuery(lastSearch, false)
+            this.results.addAll(arguments.getSerializable(RESULTS_BUNDLE_KEY) as ArrayList<InPlace>)
+            this.adapter.notifyDataSetChanged()
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        info("count=${results.size}")
-        outState.putString("query", lastSearch)
-        outState.putSerializable("results", this.results.toTypedArray())
+        outState.putString(QUERY_BUNDLE_KEY, lastSearch)
+        outState.putSerializable(RESULTS_BUNDLE_KEY, this.results)
     }
 
     private fun searchFor(search: String) {
@@ -141,5 +137,8 @@ class SearchFragment : Fragment(), AnkoLogger {
             SearchFragment().apply {
                 arguments = prevState
             }
+
+        private const val QUERY_BUNDLE_KEY = "query"
+        private const val RESULTS_BUNDLE_KEY = "results"
     }
 }

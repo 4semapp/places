@@ -16,14 +16,13 @@ import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.gson.GsonBuilder
 import com.tvestergaard.places.*
+import com.tvestergaard.places.R.string.choose_pictures_button_size
 import com.tvestergaard.places.transport.BackendCommunicator
 import com.tvestergaard.places.transport.OutPicture
 import com.tvestergaard.places.transport.OutPlace
 import kotlinx.android.synthetic.main.fragment_contribute.*
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.support.v4.toast
 import java.io.File
@@ -33,8 +32,7 @@ val onResumeOperations = mutableListOf<(ContributeFragment) -> Unit>()
 class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationListener {
 
     private var locationManager: LocationManager? = null
-    private var images = mutableListOf<DiskImage>()
-    private val permissionRequestCode = 0
+    private var images = arrayListOf<DiskImage>()
     private var requiredPermissions = arrayOf(READ_EXTERNAL_STORAGE, ACCESS_FINE_LOCATION)
 
     // used to lock the manualLocation property
@@ -47,47 +45,35 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
     // set to true when the user edits the longitude or latitude inputs
     private var manualLocation = false
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_contribute, container, false)
-    }
-
-    @SuppressLint("MissingPermission")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
     }
 
     override fun onStart() {
         super.onStart()
         checkPermissions()
 
-        checkPermissions()
         choosePicturesButton.setOnClickListener {
             var intent = Intent(activity, SelectPictureActivity::class.java)
-            startActivityForResult(intent, selectPictureRequestCode)
+            startActivityForResult(intent, SELECT_PICTURE_REQUEST_CODE)
         }
 
-        if (images.isEmpty()) {
-            submitPlaceButton.isEnabled = false
-            submitPlaceButton.backgroundColor = 0xFFAAAAAA.toInt()
-        }
-
+        updateButtons()
         submitPlaceButton.setOnClickListener { submitPlace() }
         latitudeInput.addTextChangedListener(Watcher())
         longitudeInput.addTextChangedListener(Watcher())
 
         if (!arguments.isEmpty) {
-            val title = arguments.getString("title")
-            titleInput.setText(title)
+            titleInput.setText(arguments.getString(TITLE_BUNDLE_KEY))
             images.clear()
-            images.addAll(arguments.get("images") as Array<DiskImage>)
-            updateSubmitButtonState()
+            images.addAll(arguments.get(IMAGES_BUNDLE_KEY) as ArrayList<DiskImage>)
+            updateButtons()
         }
 
         if (onResumeOperations.isNotEmpty()) {
             onResumeOperations.forEach { it.invoke(this) }
             onResumeOperations.clear()
-            updateSubmitButtonState()
+            updateButtons()
         }
     }
 
@@ -96,34 +82,29 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
         if (onResumeOperations.isNotEmpty()) {
             onResumeOperations.forEach { it.invoke(this) }
             onResumeOperations.clear()
-            updateSubmitButtonState()
+            updateButtons()
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString("title", titleInput?.text?.toString())
-        outState.putSerializable("images", this.images.toTypedArray())
+        outState.putString(TITLE_BUNDLE_KEY, titleInput?.text?.toString())
+        outState.putSerializable(IMAGES_BUNDLE_KEY, this.images)
     }
 
-    private fun updateSubmitButtonState() {
-        choosePicturesButton.text = "Choose Pictures (" + images.size + ")"
-        choosePicturesButton.isEnabled = true
-        choosePicturesButton.backgroundColor = 0xFFFF5500.toInt()
-        if (images.isNotEmpty()) {
-            submitPlaceButton.isEnabled = true
-            submitPlaceButton.backgroundColor = 0xFFFF5500.toInt()
-        } else {
-            submitPlaceButton.isEnabled = false
-            submitPlaceButton.backgroundColor = 0xFFAAAAAA.toInt()
-        }
+    private fun updateButtons() {
+        choosePicturesButton.text = getString(choose_pictures_button_size, images.size)
+        enableButton(choosePicturesButton)
+        if (images.isNotEmpty())
+            enableButton(submitPlaceButton)
+        else
+            disableButton(submitPlaceButton)
     }
 
     private inner class Watcher : TextWatcher, AnkoLogger {
 
         override fun afterTextChanged(s: Editable?) {}
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             if (!manualLocationLock)
                 this@ContributeFragment.manualLocation = true
@@ -132,18 +113,15 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
 
     private fun submitPlace() {
 
-        submitPlaceButton.isEnabled = false
-        submitPlaceButton.backgroundColor = 0xFFAAAAAA.toInt()
-
-        choosePicturesButton.isEnabled = false
-        choosePicturesButton.backgroundColor = 0xFFAAAAAA.toInt()
+        disableButton(submitPlaceButton)
+        disableButton(choosePicturesButton)
 
         val base64Images = images.map { img ->
             val thumbnailFile = img.file
             val fullFile = getFullFile(thumbnailFile)
             OutPicture(
-                fullData = readBase64(fullFile),
-                thumbData = readBase64(thumbnailFile)
+                fullData = readBytesToBase64(fullFile),
+                thumbData = readBytesToBase64(thumbnailFile)
             )
         }
 
@@ -159,9 +137,9 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
             val response = BackendCommunicator().postPlace(toCreate)
             runOnUiThread {
                 if (response == null)
-                    toast("The place could not be created.")
+                    toast(getString(R.string.place_created_error))
                 else {
-                    toast("The place was successfully created.")
+                    toast(getString(R.string.place_created_success))
                     this@ContributeFragment.reset()
                 }
             }
@@ -171,7 +149,7 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
     private fun getFullFile(thumbnailFile: File) =
         File(thumbnailFile.parent, thumbnailFile.name.removePrefix("thumb_"))
 
-    private fun readBase64(imageFile: File) =
+    private fun readBytesToBase64(imageFile: File) =
         Base64.encodeToString(imageFile.inputStream().readBytes(), Base64.DEFAULT)
 
     @SuppressLint("MissingPermission")
@@ -203,11 +181,13 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            selectPictureRequestCode ->
+            SELECT_PICTURE_REQUEST_CODE ->
                 if (resultCode == RESULT_OK && data != null) {
                     this.manualLocation = true
                     onResumeOperations.add { self ->
-                        self.images = (data.extras["selected"] as Array<DiskImage>).toMutableList()
+                        val selected = data.extras[SelectPictureActivity.INTENT_SELECTED_KEY] as ArrayList<DiskImage>
+                        self.images.clear()
+                        self.images.addAll(selected)
                     }
                 }
         }
@@ -220,14 +200,14 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
      */
     private fun checkPermissions() {
         if (!hasPermissions(requiredPermissions))
-            requestPermissions(requiredPermissions, permissionRequestCode)
+            requestPermissions(requiredPermissions, PERMISSION_REQUEST_CODE)
         else
             startLocationListener()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when (requestCode) {
-            permissionRequestCode -> {
+            PERMISSION_REQUEST_CODE -> {
                 if (isGranted(grantResults))
                     startLocationListener()
             }
@@ -237,7 +217,7 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
     private fun reset() {
         titleInput.setText("")
         images.clear()
-        updateSubmitButtonState()
+        updateButtons()
     }
 
     override fun onDestroy() {
@@ -252,6 +232,9 @@ class ContributeFragment : Fragment(), AnkoLogger, android.location.LocationList
                 arguments = prevState
             }
 
-        const val selectPictureRequestCode = 2
+        const val SELECT_PICTURE_REQUEST_CODE = 2
+        const val PERMISSION_REQUEST_CODE = 4
+        const val TITLE_BUNDLE_KEY = "title"
+        const val IMAGES_BUNDLE_KEY = "images"
     }
 }
