@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Places</string>
+    <string name="authentication_error">Du blev ikke logget ind.</string>
+    <string name="camera_delete_dialog_subtitle">Er du sikker?</string>
+    <string name="camera_delete_dialog_title">Slet billede</string>
+    <string name="camera_delete_error">Billedet kunne ikke slettes</string>
+    <string name="camera_delete_success">Billedet blev slettet</string>
+    <string name="camera_picture_taken_failure">Billedet kunne ikke blive taget.</string>
+    <string name="camera_picture_taken_success">Billedet er nu gemt.</string>
+    <string name="camera_take_picture_button_text">Tag Billede</string>
+    <string name="contribute_choose_picture_button_text">Vælg Billeder</string>
+    <string name="contribute_choose_pictures_button_size">Vælg Billeder (%1$d)</string>
+    <string name="contribute_complete_image_selection_text">Færdig</string>
+    <string name="contribute_header">Opret Sted</string>
+    <string name="contribute_input_description_label">Beskrivelse</string>
+    <string name="contribute_input_latitude_label">Breddegrad</string>
+    <string name="contribute_input_longitude_label">Længdegrad</string>
+    <string name="contribute_input_title_label">Titel</string>
+    <string name="contribute_place_created_error">Stedet blev ikke oprettet.</string>
+    <string name="contribute_place_created_success">Stedet blev oprettet</string>
+    <string name="contribute_post_button_text">Indsend</string>
+    <string name="no_pictures_selected_error">Du skal vælge nogle billeder.</string>
+    <string name="profile_location_label">Lokation</string>
+    <string name="profile_name_label">Navn</string>
+    <string name="profile_number_of_posts_label">Opslag</string>
+    <string name="profile_sign_out_text">Log ud</string>
+    <string name="search_input_placeholder">Søg på titel</string>
+    <string name="title_camera">Kamera</string>
+    <string name="title_contribute">Bidrag</string>
+    <string name="title_home">Hjem</string>
+    <string name="title_profile">Profil</string>
+    <string name="title_search">Søg</string>
+    <string name="welcome_back_name">Velkommen tilbage %1$s</string>
+</resources>

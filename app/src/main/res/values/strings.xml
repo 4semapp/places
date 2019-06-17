@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">Places</string>
-    <string name="server_client_id">361668683148-f4fe5kh2o5h530f60q9v15pn67p858bh.apps.googleusercontent.com</string>
+    <string name="server_client_id" translatable="false">361668683148-f4fe5kh2o5h530f60q9v15pn67p858bh.apps.googleusercontent.com</string>
     <string name="welcome_back_name">Welcome back %1$s</string>
     <string name="authentication_error">You could not be authenticated.</string>
-    <string name="google_authentication_app_id">361668683148-casfe6p1qcgpf8s5aa2cg2tr6qvstdg0.apps.googleusercontent.com
+    <string name="google_authentication_app_id" translatable="false">361668683148-casfe6p1qcgpf8s5aa2cg2tr6qvstdg0.apps.googleusercontent.com
     </string>
     <string name="no_pictures_selected_error">You must select a picture to continue.</string>
 
@@ -47,7 +47,7 @@
     <string name="profile_sign_out_text">SIGN OUT</string>
 
     <!-- Debug -->
-    <string name="title_item_list">Items</string>
-    <string name="title_item_detail">Item Detail</string>
-    <string name="title_activity_master_detail">MasterDetail</string>
+    <string name="title_item_list" translatable="false">Items</string>
+    <string name="title_item_detail" translatable="false">Item Detail</string>
+    <string name="title_activity_master_detail" translatable="false">MasterDetail</string>
 </resources>
