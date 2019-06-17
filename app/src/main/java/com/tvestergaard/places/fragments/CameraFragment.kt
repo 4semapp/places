@@ -29,6 +29,7 @@ import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import com.bumptech.glide.load.resource.bitmap.TransformationUtils.rotateImage
+import org.jetbrains.anko.info
 import java.io.ByteArrayOutputStream
 
 
@@ -131,10 +132,11 @@ class CameraFragment : Fragment(), AnkoLogger {
                     correctRotation(takenPicture!!)
                     thumbnail(takenPicture!!)
                     takenPicture = null
+                } else {
+                    toast(getString(string.camera_picture_taken_failure))
+
                 }
             }
-        } else {
-            toast(getString(string.camera_picture_taken_failure))
         }
     }
 
