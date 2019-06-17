@@ -76,14 +76,15 @@ class SearchFragment : Fragment(), AnkoLogger {
 
     private fun searchFor(search: String) {
         doAsync {
-            results.clear()
-            results.addAll(backendCommunicator.search(search))
             runOnUiThread {
                 // collapse the SearchView keyboard
                 searchInput.clearFocus()
                 searchInput.onActionViewCollapsed()
                 screen.requestFocus()
-
+            }
+            results.clear()
+            results.addAll(backendCommunicator.search(search))
+            runOnUiThread {
                 adapter.notifyDataSetChanged()
             }
         }
